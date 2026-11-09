@@ -1,0 +1,6 @@
+[functions.chat]
+verify_jwt = false
+
+[functions.ingest]
+# o próprio código valida o JWT e o papel admin
+verify_jwt = false

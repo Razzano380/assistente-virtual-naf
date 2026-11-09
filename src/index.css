@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tema escuro único: fundo #0b0a12, destaque roxo #a855f7, brilho rosa. */
+@layer base {
+  :root {
+    --background: 250 29% 5%;
+    --foreground: 250 20% 92%;
+    --card: 250 22% 9%;
+    --card-foreground: 250 20% 92%;
+    --popover: 250 22% 9%;
+    --popover-foreground: 250 20% 92%;
+    --primary: 271 91% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 18% 14%;
+    --secondary-foreground: 250 20% 92%;
+    --muted: 250 18% 14%;
+    --muted-foreground: 250 10% 65%;
+    --accent: 250 18% 16%;
+    --accent-foreground: 250 20% 92%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 250 16% 18%;
+    --input: 250 16% 18%;
+    --ring: 271 91% 65%;
+    --radius: 0.75rem;
+    --glow: 330 85% 60%;
+    --cat-irpf: 217 91% 60%;
+    --cat-mei: 142 71% 45%;
+    --cat-dirf: 38 92% 50%;
+    --cat-outros: 250 10% 55%;
+  }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground antialiased; }
+}
+
+/* Markdown das respostas (o preflight do Tailwind zera listas e títulos). */
+@layer components {
+  .prose-chat > * + * { @apply mt-2; }
+  .prose-chat h1, .prose-chat h2, .prose-chat h3 { @apply font-semibold text-foreground; }
+  .prose-chat h1 { @apply text-lg; }
+  .prose-chat h2 { @apply text-base; }
+  .prose-chat ul { @apply list-disc space-y-1 pl-5; }
+  .prose-chat ol { @apply list-decimal space-y-1 pl-5; }
+  .prose-chat strong { @apply font-semibold text-foreground; }
+  .prose-chat a { @apply text-primary underline underline-offset-2; }
+  .prose-chat code { @apply rounded bg-secondary px-1 py-0.5 text-xs; }
+  .prose-chat table { @apply w-full border-collapse text-xs; }
+  .prose-chat th, .prose-chat td { @apply border border-border px-2 py-1 text-left; }
+}

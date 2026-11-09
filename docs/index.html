@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistente Virtual NAF</title>
+<meta name="description" content="Chatbot acadêmico que responde dúvidas sobre IRPF, MEI e DIRF com base nos documentos oficiais da Receita Federal.">
+<style>
+:root{--bg:#09090f;--card:#14131c;--line:#2a2738;--text:#ecebf5;--muted:#a09db3;--pri:#a855f7;--pink:#ec4899;--ok:#34d399;--warn:#fbbf24}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+a{color:var(--pri)}
+a:focus-visible{outline:2px solid var(--pink);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:5;background:rgba(9,9,15,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:20px;min-height:56px}
+.brand{font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap}
+nav{display:flex;gap:18px;overflow-x:auto;margin-left:auto;font-size:14px}
+nav a{color:var(--muted);text-decoration:none;white-space:nowrap;padding:16px 0}
+nav a:hover{color:var(--text)}
+.hero{padding-top:80px;padding-bottom:56px}
+.tag{display:inline-block;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+h1{font-size:clamp(34px,6vw,56px);line-height:1.1;margin:18px 0 14px;background:linear-gradient(90deg,var(--pri),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:19px;color:var(--muted);max-width:720px;margin:0 0 28px}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-block;padding:11px 20px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid var(--line);color:var(--text)}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+section{padding:56px 0;border-top:1px solid var(--line)}
+h2{font-size:28px;margin:0 0 8px}
+h3{font-size:18px;margin:0 0 6px}
+.sub{color:var(--muted);margin:0 0 28px;max-width:720px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.card p{margin:0;color:var(--muted)}
+.card ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:14px 0 26px}
+.step{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;color:var(--muted)}
+.step b{display:block;color:var(--text);font-size:15px}
+.step span{color:var(--pri);font-weight:700;font-size:13px}
+figure{margin:0}
+figure img{width:100%;height:auto;display:block;border-radius:12px;border:1px solid var(--line)}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+.shots{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.note{border-left:3px solid var(--warn);background:var(--card);padding:14px 18px;border-radius:0 10px 10px 0;color:var(--muted);margin:0 0 24px}
+.note b{color:var(--text)}
+ul.status{list-style:none;padding:0;margin:8px 0 0}
+ul.status li{padding:7px 0 7px 26px;position:relative;color:var(--muted);border-bottom:1px solid var(--line)}
+ul.status li:last-child{border:0}
+ul.status li::before{content:"";position:absolute;left:4px;top:15px;width:10px;height:10px;border-radius:50%;background:var(--ok)}
+ul.status.todo li::before{background:transparent;border:2px solid var(--warn)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+td:first-child{white-space:nowrap}
+pre{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto;font:14px/1.5 Consolas,"Cascadia Code",monospace;color:#d6d3e8;margin:0}
+code{font-family:Consolas,"Cascadia Code",monospace;font-size:.92em;color:#d6b4ff}
+.time{display:grid;gap:14px}
+.time div{border-left:2px solid var(--pri);padding:2px 0 2px 16px}
+.time time{font-size:13px;color:var(--pri);font-weight:700}
+.time p{margin:2px 0 0;color:var(--muted)}
+footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+@media (max-width:640px){.hero{padding-top:48px;padding-bottom:36px}section{padding:40px 0}nav{gap:14px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#topo">⚖️ Assistente Virtual NAF</a>
+    <nav aria-label="Seções">
+      <a href="#sobre">Sobre</a>
+      <a href="#tecnologias">Tecnologias</a>
+      <a href="#demonstracao">Demonstração</a>
+      <a href="#desenvolvimento">Desenvolvimento</a>
+      <a href="#documentacao">Documentação</a>
+      <a href="#evolucao">Evolução</a>
+    </nav>
+  </div>
+</header>
+
+<main id="topo">
+
+<div class="wrap hero">
+  <span class="tag">Projeto acadêmico · FMU · em desenvolvimento</span>
+  <h1>Assistente Virtual NAF</h1>
+  <p class="lead">Um chatbot que responde dúvidas sobre Imposto de Renda, MEI e DIRF usando somente os documentos oficiais da Receita Federal, e mostra de qual página veio cada resposta.</p>
+  <div class="btns">
+    <a class="btn pri" href="https://github.com/Razzano380/assistente-virtual-naf">Ver código no GitHub</a>
+    <a class="btn" href="#demonstracao">Ver demonstração</a>
+  </div>
+</div>
+
+<section id="apresentacao">
+  <div class="wrap">
+    <div class="grid">
+      <div class="card"><h3>Objetivo</h3><p>Dar respostas rápidas e confiáveis a dúvidas fiscais comuns, apoiando o atendimento do NAF (Núcleo de Apoio Contábil e Fiscal).</p></div>
+      <div class="card"><h3>Problema</h3><p>As respostas oficiais estão em PDFs longos. Só o "Perguntas e Respostas" do IRPF 2024 tem 301 páginas. Achar um trecho específico leva tempo.</p></div>
+      <div class="card"><h3>Solução</h3><p>Busca semântica nos PDFs e uma IA que só responde com o que encontrou. Se não encontrou, ela diz que não sabe.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="sobre">
+  <div class="wrap">
+    <h2>Sobre o projeto</h2>
+    <p class="sub">Contexto, motivação e para quem ele serve.</p>
+    <div class="grid">
+      <div class="card"><h3>Contexto acadêmico</h3><p>Trabalho desenvolvido na FMU. Recria, em tecnologia web, um chatbot de referência feito em Python (Streamlit, LangChain, Chroma e Groq), mantendo os mesmos parâmetros de busca.</p></div>
+      <div class="card"><h3>Motivação</h3><p>Praticar a técnica RAG (geração com recuperação de documentos) num caso real: informação fiscal, em que resposta inventada causa prejuízo.</p></div>
+      <div class="card"><h3>Justificativa</h3><p>Um chatbot comum pode "alucinar". Aqui a resposta fica presa ao documento oficial e traz a página de origem, para a pessoa conferir.</p></div>
+      <div class="card"><h3>Público-alvo</h3><p>Contribuintes pessoa física, microempreendedores individuais (MEI) e os alunos que atendem no NAF.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="tecnologias">
+  <div class="wrap">
+    <h2>Tecnologias</h2>
+    <p class="sub">Cada peça e o papel dela.</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Camada</th><th>Tecnologia</th><th>Para quê</th></tr>
+      <tr><td>Interface</td><td>React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui</td><td>Tela do chat e área de administração</td></tr>
+      <tr><td>Leitura de PDF</td><td>pdfjs-dist</td><td>Extrai o texto de cada página no navegador</td></tr>
+      <tr><td>Embeddings</td><td>gte-small (384 dimensões), @huggingface/transformers</td><td>Transforma texto em vetores para a busca por significado</td></tr>
+      <tr><td>Servidor</td><td>Supabase Edge Functions (Deno)</td><td>Funções <code>chat</code> e <code>ingest</code></td></tr>
+      <tr><td>Banco de dados</td><td>Supabase Postgres + pgvector (índice HNSW)</td><td>Guarda os trechos e faz a busca por similaridade</td></tr>
+      <tr><td>Modelo de linguagem</td><td>Groq, <code>openai/gpt-oss-120b</code>, temperatura 0</td><td>Escreve a resposta a partir dos trechos encontrados</td></tr>
+      <tr><td>Acesso</td><td>Supabase Auth, papéis e RLS</td><td>Só administradores alteram a base de conhecimento</td></tr>
+      <tr><td>Testes</td><td>Vitest</td><td>5 testes do divisor de texto</td></tr>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section id="demonstracao">
+  <div class="wrap">
+    <h2>Demonstração</h2>
+    <p class="sub">Como o sistema funciona e como ele está hoje.</p>
+
+    <h3>Caminho de uma pergunta</h3>
+    <div class="flow">
+      <div class="step"><span>1</span><b>Pergunta</b>A pessoa digita a dúvida no chat.</div>
+      <div class="step"><span>2</span><b>Embedding</b>A pergunta vira um vetor de 384 números.</div>
+      <div class="step"><span>3</span><b>Busca</b>O banco devolve os 5 trechos mais parecidos.</div>
+      <div class="step"><span>4</span><b>Resposta</b>A IA responde usando só esses trechos.</div>
+      <div class="step"><span>5</span><b>Fontes</b>O chat mostra documento, categoria e página.</div>
+    </div>
+
+    <h3>Caminho de um documento</h3>
+    <div class="flow">
+      <div class="step"><span>1</span><b>Upload</b>O administrador envia o PDF e escolhe a categoria.</div>
+      <div class="step"><span>2</span><b>Texto</b>O navegador extrai o texto página a página.</div>
+      <div class="step"><span>3</span><b>Trechos</b>Blocos de 1000 caracteres com 200 de sobreposição.</div>
+      <div class="step"><span>4</span><b>Vetores</b>O navegador gera o embedding de cada trecho.</div>
+      <div class="step"><span>5</span><b>Banco</b>A função confere a permissão e grava.</div>
+    </div>
+
+    <p class="note"><b>Estágio atual, sem maquiagem:</b> as telas e o servidor estão prontos e publicados, mas a base de conhecimento ainda está sendo carregada. Por isso as capturas abaixo mostram as telas reais sem uma resposta com fontes. Essa captura entra na próxima atualização.</p>
+
+    <div class="shots">
+      <figure><img src="img/chat.png" alt="Tela inicial do chat, com título, quatro perguntas sugeridas e campo para digitar a dúvida" loading="lazy"><figcaption>Tela do chat, com perguntas sugeridas.</figcaption></figure>
+      <figure><img src="img/admin.png" alt="Tela de login da área de administração da base de conhecimento" loading="lazy"><figcaption>Entrada da área de administração, onde os PDFs são enviados.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="desenvolvimento">
+  <div class="wrap">
+    <h2>Desenvolvimento</h2>
+    <p class="sub">O que já funciona e o que ainda falta.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Implementado</h3>
+        <ul class="status">
+          <li>Chat com resposta formatada e lista de fontes</li>
+          <li>Resposta padrão quando a informação não está nos documentos</li>
+          <li>Proteção contra instruções maliciosas dentro da pergunta</li>
+          <li>Login e papel de administrador</li>
+          <li>Upload de PDF com barra de progresso, lista e exclusão</li>
+          <li>Divisor de texto com testes automatizados</li>
+          <li>Banco, permissões e funções publicados no Supabase</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Em desenvolvimento</h3>
+        <ul class="status todo">
+          <li>Carga dos 4 PDFs na base (IRPF 2024, dois de MEI, DIRF 2025)</li>
+          <li>Teste ponta a ponta: pergunta, resposta e conferência da página citada</li>
+          <li>Captura de tela de uma resposta com fontes</li>
+          <li>Publicação do aplicativo em um endereço público</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Próximas entregas</h3>
+        <ul class="status todo">
+          <li>Avaliação de qualidade com perguntas de resposta conhecida</li>
+          <li>Histórico da conversa</li>
+          <li>Resposta aparecendo aos poucos (streaming)</li>
+          <li>Filtro por categoria na busca</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="documentacao">
+  <div class="wrap">
+    <h2>Documentação técnica</h2>
+    <p class="sub">Resumo para quem quer entender ou rodar o projeto. A versão completa está em <a href="https://github.com/Razzano380/assistente-virtual-naf/blob/main/docs/DOCUMENTACAO.md">docs/DOCUMENTACAO.md</a>.</p>
+
+    <h3>Estrutura dos arquivos</h3>
+<pre>src/
+  pages/Index.tsx            chat público
+  pages/Admin.tsx            login, upload e lista de documentos
+  components/chat/           caixa de pergunta, mensagem e fontes
+  lib/pdf.ts                 extrai o texto do PDF
+  lib/chunker.ts             divide o texto em trechos (com testes)
+  lib/embeddings.ts          gera os vetores no navegador
+supabase/
+  migrations/                tabelas, pgvector, permissões
+  functions/chat/            busca os trechos e chama a IA
+  functions/ingest/          valida o admin e grava os trechos
+docs/                        esta página e a documentação</pre>
+
+    <h3 style="margin-top:28px">Como executar</h3>
+<pre>git clone https://github.com/Razzano380/assistente-virtual-naf.git
+cd assistente-virtual-naf
+npm install
+cp .env.example .env    # preencher com a URL e a chave pública do Supabase
+npm run dev             # abre em http://localhost:5173
+npm test                # roda os testes</pre>
+
+    <h3 style="margin-top:28px">Requisitos</h3>
+    <div class="grid">
+      <div class="card"><p>Node.js 20 ou mais recente.</p></div>
+      <div class="card"><p>Um projeto Supabase com a migração aplicada e as duas funções publicadas.</p></div>
+      <div class="card"><p>Uma chave da Groq cadastrada como segredo no Supabase. Ela nunca fica no código nem no navegador.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="evolucao">
+  <div class="wrap">
+    <h2>Evolução do projeto</h2>
+    <p class="sub">Histórico e principais melhorias.</p>
+    <div class="time">
+      <div><time datetime="2026-11-08">08/11/2026</time><p>Análise do chatbot de referência em Python e definição dos requisitos da versão web.</p></div>
+      <div><time datetime="2026-11-08">08/11/2026</time><p>Primeira versão: chat, área de administração, divisor de texto e testes.</p></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><p>Banco de dados e funções publicados no Supabase.</p></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: os embeddings dos documentos passaram a ser gerados no navegador. No servidor gratuito, o envio de PDFs estourava o limite de processamento (erro 546).</p></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><p>Repositório público e esta página de apresentação.</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Desenvolvido por Juan Razzano · Projeto acadêmico, FMU · <a href="https://github.com/Razzano380/assistente-virtual-naf">github.com/Razzano380/assistente-virtual-naf</a><br>
+    As respostas do assistente são geradas por IA a partir de documentos oficiais e não substituem o atendimento do NAF.
+  </div>
+</footer>
+
+</body>
+</html>
