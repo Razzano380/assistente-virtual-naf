@@ -86,9 +86,24 @@ Parâmetros: **um bloco por pergunta** do documento (marcadores "001 — " no P&
 - Recusa de PDFs sem texto (escaneados).
 - Mensagens de erro específicas (configuração ausente, limite excedido, sem conexão).
 
+### Avaliação da busca (10/11/2026)
+
+Gabarito em `scripts/gabarito.json`: 74 perguntas escritas em linguagem do dia a dia (não copiadas dos PDFs), espalhadas pelos 4 documentos, cada uma com documento e página da resposta oficial, mais 6 perguntas fora da base. O script `npm run avaliar` usa o mesmo corte e o mesmo modelo do app e verifica se a página certa está entre os 6 trechos enviados à IA. Não avalia o texto final da IA.
+
+| Documento | Acertos |
+|---|---|
+| P&R IRPF 2024 | 28/30 |
+| Dirf 2025 | 12/13 |
+| perguntaS_mei | 14/17 |
+| P&R gov_MEI | 14/14 |
+| **Total** | **68/74 (92%)**, posição média inversa (MRR) 0,667 |
+
+Falhas: prazo de entrega do IR (a busca traz o prazo da Dirf), calendário da restituição, rendimentos acumulados na Dirf, obrigações do MEI, prazo da DASN-Simei e excesso de faturamento do MEI. Nas perguntas fora da base, a similaridade do 1º trecho (0,82 a 0,88) fica na mesma faixa das respostas certas: um corte por similaridade não separaria "tem" de "não tem"; quem decide é a IA, pelo prompt.
+
 ## 8. Funcionalidades em desenvolvimento
 
-- Qualidade da busca: perguntas como "Quem está obrigado a declarar o IR?" ainda não encontram a resposta (ver seção 9).
+- Corrigir as 6 falhas da avaliação da busca (ver acima).
+- Teste de ponta a ponta (pergunta ao chat publicado e conferência da resposta), respeitando o limite de uso.
 - Publicação do aplicativo em endereço público.
 
 ## 9. Problemas encontrados e soluções
@@ -104,10 +119,9 @@ Parâmetros: **um bloco por pergunta** do documento (marcadores "001 — " no P&
 
 ## 10. Próximos passos
 
-- **Ampliar o teste da busca.** Com os trechos por pergunta e 6 trechos por busca, as 5 perguntas do teste são respondidas no chat (09/11/2026). A de obrigatoriedade entra com margem pequena (a pergunta 001 é o 6º trecho). Próximo passo: uma lista maior de perguntas com resposta conhecida; se aparecerem falhas parecidas, um modelo de embeddings maior ou um reordenador (reranker).
+- **Corrigir as falhas da busca** (92% no gabarito). Candidatos: reconhecer a numeração "303. " do P&R gov_MEI, um modelo de embeddings maior ou um reordenador (reranker). Cada mudança é medida com `npm run avaliar` antes de reenviar os PDFs.
 - O chat baixa ~113 MB (modelo) na primeira visita; fica em cache no navegador.
-- Concluir a carga da base e registrar uma demonstração com resposta e fontes.
-- Medir a qualidade com uma lista de perguntas de resposta conhecida.
+- Registrar uma demonstração com resposta e fontes.
 - Histórico de conversa, resposta em streaming e filtro por categoria.
 - Migrar da chave `service_role` legada para as chaves novas do Supabase antes de 2027.
 

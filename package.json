@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "avaliar": "node scripts/avaliar-busca.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.5.1",

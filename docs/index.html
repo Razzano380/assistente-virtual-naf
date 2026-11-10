@@ -188,7 +188,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="card">
         <h3>Em desenvolvimento</h3>
         <ul class="status todo">
-          <li>Avaliação ampla: lista de perguntas com resposta conhecida e taxa de acerto</li>
+          <li>Busca: corrigir as 6 falhas do gabarito (hoje 68 de 74 perguntas, 92%)</li>
           <li>Captura de tela de uma resposta com fontes</li>
           <li>Publicação do aplicativo em um endereço público</li>
         </ul>
@@ -255,6 +255,7 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Base carregada e primeiros testes reais. Correção: a IA citava páginas inexistentes (confundia número de pergunta com número de página); agora as páginas vêm do banco. Diagnóstico: o modelo de busca erra perguntas comuns em português, com comparação medida entre modelos.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: troca do modelo de busca gte-small (inglês) pelo multilingual-e5-small, rodando no navegador. Base reprocessada (1.669 trechos); as perguntas de MEI passaram a ser respondidas.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Trechos cortados por pergunta (cada trecho começa com o título da pergunta) e busca com 6 trechos, Base reprocessada: as 5 perguntas do teste passaram a ser respondidas, inclusive a de obrigatoriedade do IR.</p></div>
+      <div><time datetime="2026-11-10">10/11/2026</time><p>Segurança: verificação em duas etapas para o administrador, limite de uso no chat e cadastro público desligado. Avaliação automática da busca com um gabarito de 74 perguntas: 68 acertos (92%).</p></div>
     </div>
   </div>
 </section>

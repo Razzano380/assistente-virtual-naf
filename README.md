@@ -60,4 +60,9 @@ Um PDF com o mesmo nome substitui o anterior. PDFs escaneados (só imagem) não 
 
 ## Testes
 
-`npm test` roda o teste do splitter (nenhum chunk passa de 1000 caracteres e chunks consecutivos se sobrepõem).
+`npm test` roda o teste do divisor de texto (tamanho dos trechos, sobreposição, corte por pergunta).
+
+`npm run avaliar -- "<pasta com os 4 PDFs>"` mede a **busca** com o gabarito de [scripts/gabarito.json](scripts/gabarito.json)
+(74 perguntas em linguagem do dia a dia, com documento e página esperados, mais 6 fora da base): diz se a página
+certa aparece entre os 6 trechos que vão para a IA. Não usa a Groq. A 1ª execução gera os vetores (~5 min) e guarda
+em `scripts/.cache`; as seguintes levam segundos. Para testar uma pergunta nova, acrescente-a no gabarito.
