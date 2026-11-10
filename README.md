@@ -30,7 +30,7 @@ o limite de ~2 s de CPU do plano gratuito impede gerá-los na Edge Function) →
 
 ## Configuração
 
-1. Crie um projeto Supabase (ou use o Lovable Cloud) e aplique `supabase/migrations/20261108000000_naf_rag.sql`.
+1. Crie um projeto Supabase (ou use o Lovable Cloud) e aplique as migrations de `supabase/migrations/` em ordem (`20261108000000_naf_rag.sql`, depois `20261110000000_seguranca.sql`).
 2. Faça o deploy das funções `chat` e `ingest` (as duas com `verify_jwt = false`; a `ingest` valida o JWT e o papel admin no próprio código).
 3. Cadastre o Secret **`GROQ_API_KEY`** (crie a chave em https://console.groq.com/keys). Ela nunca vai para o front-end.
 4. Copie `.env.example` para `.env` e preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`.
@@ -39,7 +39,14 @@ o limite de ~2 s de CPU do plano gratuito impede gerá-los na Edge Function) →
 ## Primeiro administrador
 
 Um trigger em `auth.users` dá o papel `admin` ao **primeiro usuário cadastrado** (enquanto `user_roles` estiver vazia).
-Por isso, cadastre-se em `/admin` antes de divulgar o link. Para adicionar outro admin depois, rode no SQL:
+O app não tem tela de cadastro: crie o usuário em Supabase → Authentication → Users → **Add user** e depois
+desligue "Allow new users to sign up" (Authentication → Sign In / Providers).
+
+No primeiro acesso a `/admin`, o admin cadastra um **app autenticador** (QR code). Daí em diante o login pede o código
+de 6 dígitos: o banco (RLS) e a função `ingest` só aceitam alterações de sessões com segundo fator (`aal2`).
+Perdeu o celular? Apague o fator em Authentication → Users → (usuário) e cadastre de novo.
+
+Para adicionar outro admin depois, crie o usuário pelo painel e rode no SQL:
 
 ```sql
 insert into public.user_roles (user_id, role)

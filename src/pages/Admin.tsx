@@ -48,28 +48,24 @@ async function invokeIngest<T>(body: Record<string, unknown>): Promise<T> {
   throw new Error(await mensagemDeErro(ultimoErro))
 }
 
+// Cadastro desligado no Supabase (Auth → "Allow new users to sign up"): admins novos são convidados pelo painel.
 function Login() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
-  const [modo, setModo] = useState<'entrar' | 'cadastrar'>('entrar')
   const [carregando, setCarregando] = useState(false)
 
   const enviar = async (e: FormEvent) => {
     e.preventDefault()
     setCarregando(true)
-    const { error } =
-      modo === 'entrar'
-        ? await supabase.auth.signInWithPassword({ email, password: senha })
-        : await supabase.auth.signUp({ email, password: senha, options: { emailRedirectTo: `${location.origin}/admin` } })
+    const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
     setCarregando(false)
-    if (error) return toast.error(error.message)
-    if (modo === 'cadastrar') toast.success('Cadastro feito. Se for pedido, confirme o e-mail e depois entre.')
+    if (error) toast.error(error.message)
   }
 
   return (
     <Card className="mx-auto mt-16 max-w-sm">
       <CardHeader>
-        <CardTitle>{modo === 'entrar' ? 'Entrar' : 'Criar conta'}</CardTitle>
+        <CardTitle>Entrar</CardTitle>
         <CardDescription>Área de administração da base de conhecimento.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -81,23 +77,93 @@ function Login() {
           <div className="space-y-1">
             <Label htmlFor="senha">Senha</Label>
             <Input
-              id="senha" type="password" required minLength={6}
-              autoComplete={modo === 'entrar' ? 'current-password' : 'new-password'}
+              id="senha" type="password" required autoComplete="current-password"
               value={senha} onChange={(e) => setSenha(e.target.value)}
             />
           </div>
           <Button type="submit" className="w-full" disabled={carregando}>
             {carregando && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />}
-            {modo === 'entrar' ? 'Entrar' : 'Cadastrar'}
+            Entrar
           </Button>
-          <button
-            type="button"
-            className="w-full text-sm text-muted-foreground underline-offset-2 hover:underline"
-            onClick={() => setModo(modo === 'entrar' ? 'cadastrar' : 'entrar')}
-          >
-            {modo === 'entrar' ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entrar'}
-          </button>
         </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+/**
+ * Segundo fator (TOTP). Sem fator verificado: cadastra o app autenticador (QR code).
+ * Com fator: pede o código de 6 dígitos. O banco (RLS) e a função ingest exigem a sessão aal2.
+ */
+function SegundoFator({ onVerificado }: { onVerificado: () => void }) {
+  const [fatorId, setFatorId] = useState<string | null>(null)
+  const [qr, setQr] = useState<{ svg: string; segredo: string } | null>(null)
+  const [codigo, setCodigo] = useState('')
+  const [carregando, setCarregando] = useState(false)
+
+  useEffect(() => {
+    ;(async () => {
+      const { data, error } = await supabase.auth.mfa.listFactors()
+      if (error) return toast.error(error.message)
+      const verificado = data.totp.find((f) => f.status === 'verified')
+      if (verificado) return setFatorId(verificado.id)
+      // Cadastro interrompido antes deixa fator "unverified": remove para começar de novo.
+      for (const f of data.all.filter((f) => f.factor_type === 'totp' && f.status !== 'verified'))
+        await supabase.auth.mfa.unenroll({ factorId: f.id })
+      const novo = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Autenticador NAF' })
+      if (novo.error) return toast.error(novo.error.message)
+      setFatorId(novo.data.id)
+      setQr({ svg: novo.data.totp.qr_code, segredo: novo.data.totp.secret })
+    })()
+  }, [])
+
+  const verificar = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!fatorId) return
+    setCarregando(true)
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: fatorId, code: codigo.trim() })
+    setCarregando(false)
+    if (error) return toast.error('Código inválido ou expirado. Confira o relógio do celular e tente de novo.')
+    toast.success(qr ? 'Verificação em duas etapas ativada.' : 'Código confirmado.')
+    onVerificado()
+  }
+
+  return (
+    <Card className="mx-auto mt-16 max-w-sm">
+      <CardHeader>
+        <CardTitle>{qr ? 'Ative a verificação em duas etapas' : 'Verificação em duas etapas'}</CardTitle>
+        <CardDescription>
+          {qr
+            ? 'Escaneie o QR code com um app autenticador (Google Authenticator, Microsoft Authenticator, Authy…) e digite o código de 6 dígitos.'
+            : 'Digite o código de 6 dígitos do seu app autenticador.'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {qr && (
+          <div className="space-y-2 text-center">
+            <img src={qr.svg} alt="QR code para cadastrar o app autenticador" className="mx-auto h-48 w-48 rounded bg-white p-2" />
+            <p className="text-xs text-muted-foreground">
+              Sem câmera? Digite a chave no app: <code className="break-all">{qr.segredo}</code>
+            </p>
+          </div>
+        )}
+        {!fatorId ? (
+          <Loader2 className="mx-auto h-5 w-5 animate-spin text-primary" aria-label="Carregando" />
+        ) : (
+          <form onSubmit={verificar} className="space-y-4">
+            <div className="space-y-1">
+              <Label htmlFor="codigo">Código</Label>
+              <Input
+                id="codigo" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required
+                value={codigo} onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={carregando || codigo.length !== 6}>
+              {carregando && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />}
+              Confirmar
+            </Button>
+          </form>
+        )}
       </CardContent>
     </Card>
   )
@@ -176,7 +242,7 @@ function BaseDeConhecimento() {
         <CardHeader>
           <CardTitle>Adicionar PDFs</CardTitle>
           <CardDescription>
-            Os PDFs são lidos no navegador, divididos em trechos de 1000 caracteres (200 de sobreposição) e indexados.
+            Os PDFs são lidos no navegador, divididos em trechos (um por pergunta numerada; sem numeração, 1000 caracteres) e indexados.
             Um PDF com o mesmo nome substitui o anterior.
           </CardDescription>
         </CardHeader>
@@ -286,6 +352,7 @@ function BaseDeConhecimento() {
 export default function Admin() {
   const [session, setSession] = useState<Session | null>(null)
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
+  const [aal2, setAal2] = useState<boolean | null>(null)
   const [pronto, setPronto] = useState(false)
 
   useEffect(() => {
@@ -295,11 +362,13 @@ export default function Admin() {
   }, [])
 
   useEffect(() => {
-    if (!session) { setIsAdmin(null); return }
+    if (!session) { setIsAdmin(null); setAal2(null); return }
     // Só para exibir a tela; a permissão real é verificada pelo RLS e pela Edge Function.
     supabase
       .from('user_roles').select('role').eq('user_id', session.user.id).eq('role', 'admin').maybeSingle()
       .then(({ data, error }) => setIsAdmin(!error && !!data))
+    supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+      .then(({ data }) => setAal2(data?.currentLevel === 'aal2'))
   }, [session])
 
   return (
@@ -322,7 +391,7 @@ export default function Admin() {
         <Loader2 className="h-6 w-6 animate-spin text-primary" aria-label="Carregando" />
       ) : !session ? (
         <Login />
-      ) : isAdmin === null ? (
+      ) : isAdmin === null || aal2 === null ? (
         <Loader2 className="h-6 w-6 animate-spin text-primary" aria-label="Verificando permissão" />
       ) : !isAdmin ? (
         <Card className="mx-auto mt-16 max-w-sm text-center">
@@ -331,6 +400,8 @@ export default function Admin() {
             <CardDescription>Sua conta ({session.user.email}) não tem permissão de administrador.</CardDescription>
           </CardHeader>
         </Card>
+      ) : !aal2 ? (
+        <SegundoFator onVerificado={() => setAal2(true)} />
       ) : (
         <BaseDeConhecimento />
       )}

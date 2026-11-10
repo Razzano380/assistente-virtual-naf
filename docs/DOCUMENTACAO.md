@@ -51,13 +51,17 @@ Parâmetros: **um bloco por pergunta** do documento (marcadores "001 — " no P&
 - `documents`: nome (único), categoria (IRPF, MEI, DIRF, Outros), total de páginas.
 - `chunks`: conteúdo, página, embedding `vector(384)`, ligado ao documento (exclusão em cascata).
 - `user_roles` e função `has_role`: controle de administradores. O primeiro usuário cadastrado vira admin.
+- `chat_uso` e função `chat_permitido`: contagem de uso do chat (hash do IP), só para o servidor.
 - `match_documents`: busca por similaridade, executável apenas pelo servidor.
 
 ### Segurança
 
 - A chave da Groq fica nos Secrets do Supabase. O navegador só conhece a chave pública.
-- RLS: apenas administradores leem e alteram `documents` e `chunks`.
-- A função `ingest` valida o login e o papel de admin em cada chamada, e valida o formato de cada trecho e vetor.
+- RLS: apenas administradores **com verificação em duas etapas (TOTP, sessão `aal2`)** leem e alteram `documents` e `chunks`.
+- A função `ingest` valida o login, o papel de admin e o segundo fator em cada chamada, e valida o formato de cada trecho e vetor.
+- Cadastro público desligado: administradores são criados pelo painel do Supabase.
+- Limite de uso da função `chat`: 20 perguntas por IP a cada 10 minutos e 500 por dia no total (protege a cota da Groq). O IP é guardado só como hash SHA-256 (tabela `chat_uso`, acessível apenas pelo servidor).
+- Todo o tráfego usa HTTPS (TLS 1.2/1.3); senhas com bcrypt; dados em repouso com AES-256 (Supabase).
 - O prompt do sistema instrui o modelo a ignorar instruções vindas da pergunta ou dos documentos.
 
 ## 6. Etapas de desenvolvimento

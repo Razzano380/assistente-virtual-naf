@@ -1,4 +1,4 @@
-// Chat RAG público: embedding da pergunta (multilingual-e5-small, gerado no navegador) → top 5 no pgvector
+// Chat RAG público: embedding da pergunta (multilingual-e5-small, gerado no navegador) → top 6 no pgvector
 // → Groq GPT-OSS-120B. O Supabase.ai só oferece o gte-small, que é fraco em português.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4'
 
@@ -54,6 +54,12 @@ Deno.serve(async (req) => {
     )
       return json({ error: 'Atualize a página: o aplicativo está desatualizado.' }, 400)
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+    // Limite por IP e por dia (chat_permitido): a função é pública e cada pergunta gasta cota da Groq.
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+    const { data: permitido, error: limErr } = await admin.rpc('chat_permitido', { _ip: ip })
+    if (limErr) throw limErr
+    if (!permitido) return json({ error: 'Limite de perguntas atingido. Tente novamente em alguns minutos.' }, 429)
+
     const { data, error } = await admin.rpc('match_documents', {
       query_embedding: JSON.stringify(embedding),
       match_count: K,

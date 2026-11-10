@@ -1,5 +1,5 @@
 // Ingestão de PDFs (somente admin): cria o documento e grava os chunks.
-// Os embeddings gte-small (384 dim) chegam prontos do navegador: gerá-los aqui estoura o
+// Exige papel admin e sessão com MFA (aal2). Os embeddings multilingual-e5-small (384 dim) chegam prontos do navegador: gerá-los aqui estoura o
 // limite de ~2 s de CPU por chamada do plano gratuito.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4'
 
@@ -30,6 +30,9 @@ Deno.serve(async (req) => {
     if (!token) return json({ error: 'Não autenticado' }, 401)
     const { data: userData, error: userErr } = await admin.auth.getUser(token)
     if (userErr || !userData.user) return json({ error: 'Não autenticado' }, 401)
+    // Token já validado pelo getUser acima; o claim aal diz se o segundo fator (TOTP) foi verificado.
+    const aal = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal
+    if (aal !== 'aal2') return json({ error: 'Confirme o código do aplicativo autenticador (MFA).' }, 403)
     const { data: isAdmin, error: roleErr } = await admin.rpc('has_role', { _user_id: userData.user.id, _role: 'admin' })
     if (roleErr) throw roleErr
     if (!isAdmin) return json({ error: 'Acesso negado' }, 403)
