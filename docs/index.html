@@ -124,7 +124,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <tr><th>Camada</th><th>Tecnologia</th><th>Para quê</th></tr>
       <tr><td>Interface</td><td>React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui</td><td>Tela do chat e área de administração</td></tr>
       <tr><td>Leitura de PDF</td><td>pdfjs-dist</td><td>Extrai o texto de cada página no navegador</td></tr>
-      <tr><td>Embeddings</td><td>gte-small (384 dimensões), @huggingface/transformers</td><td>Transforma texto em vetores para a busca por significado</td></tr>
+      <tr><td>Embeddings</td><td>multilingual-e5-small (384 dimensões), @huggingface/transformers, no navegador</td><td>Transforma texto em vetores para a busca por significado, com bom suporte a português</td></tr>
       <tr><td>Servidor</td><td>Supabase Edge Functions (Deno)</td><td>Funções <code>chat</code> e <code>ingest</code></td></tr>
       <tr><td>Banco de dados</td><td>Supabase Postgres + pgvector (índice HNSW)</td><td>Guarda os trechos e faz a busca por similaridade</td></tr>
       <tr><td>Modelo de linguagem</td><td>Groq, <code>openai/gpt-oss-120b</code>, temperatura 0</td><td>Escreve a resposta a partir dos trechos encontrados</td></tr>
@@ -143,7 +143,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
     <h3>Caminho de uma pergunta</h3>
     <div class="flow">
       <div class="step"><span>1</span><b>Pergunta</b>A pessoa digita a dúvida no chat.</div>
-      <div class="step"><span>2</span><b>Embedding</b>A pergunta vira um vetor de 384 números.</div>
+      <div class="step"><span>2</span><b>Embedding</b>O navegador transforma a pergunta num vetor de 384 números.</div>
       <div class="step"><span>3</span><b>Busca</b>O banco devolve os 5 trechos mais parecidos.</div>
       <div class="step"><span>4</span><b>Resposta</b>A IA responde usando só esses trechos.</div>
       <div class="step"><span>5</span><b>Fontes</b>O chat mostra documento, categoria e página.</div>
@@ -158,7 +158,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="step"><span>5</span><b>Banco</b>A função confere a permissão e grava.</div>
     </div>
 
-    <p class="note"><b>Estágio atual, sem maquiagem:</b> os 4 PDFs estão carregados (1.669 trechos) e o assistente já responde perguntas como "Posso deduzir despesas médicas?" e "Qual o limite de faturamento do MEI?", com as páginas de origem. Perguntas simples como "Quem está obrigado a declarar o IR?" ainda não encontram a resposta: o modelo de busca atual (gte-small) foi treinado em inglês. A troca do modelo é a próxima entrega.</p>
+    <p class="note"><b>Estágio atual, sem maquiagem:</b> os 4 PDFs estão carregados (1.669 trechos) e o assistente já responde perguntas como "Posso deduzir despesas médicas?" e "Qual o limite de faturamento do MEI?", com as páginas de origem. Perguntas simples como "Quem está obrigado a declarar o IR?" ainda não encontravam a resposta com o primeiro modelo de busca (gte-small, treinado em inglês). Ele foi trocado por um modelo multilíngue, que em testes acertou as perguntas de MEI; a de obrigatoriedade do IR segue em aberto.</p>
 
     <div class="shots">
       <figure><img src="img/chat.png" alt="Tela inicial do chat, com título, quatro perguntas sugeridas e campo para digitar a dúvida" loading="lazy"><figcaption>Tela do chat, com perguntas sugeridas.</figcaption></figure>
@@ -188,7 +188,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="card">
         <h3>Em desenvolvimento</h3>
         <ul class="status todo">
-          <li>Busca mais precisa em português (modelo multilíngue e trechos por pergunta)</li>
+          <li>Busca mais precisa em português: trechos cortados por pergunta</li>
           <li>Captura de tela de uma resposta com fontes</li>
           <li>Publicação do aplicativo em um endereço público</li>
         </ul>
@@ -253,6 +253,7 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: os embeddings dos documentos passaram a ser gerados no navegador. No servidor gratuito, o envio de PDFs estourava o limite de processamento (erro 546).</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Repositório público e esta página de apresentação.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Base carregada e primeiros testes reais. Correção: a IA citava páginas inexistentes (confundia número de pergunta com número de página); agora as páginas vêm do banco. Diagnóstico: o modelo de busca erra perguntas comuns em português, com comparação medida entre modelos.</p></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: troca do modelo de busca gte-small (inglês) pelo multilingual-e5-small, rodando no navegador. A troca exige reprocessar os documentos com o novo modelo.</p></div>
     </div>
   </div>
 </section>

@@ -14,10 +14,22 @@ const EXEMPLOS = [
   'Posso deduzir despesas médicas no IRPF?',
 ]
 
+// Import dinâmico: o modelo (~113 MB, fica em cache no navegador) não atrasa a primeira tela.
+const embeddings = () => import('@/lib/embeddings')
+
 export default function Index() {
   const [mensagens, setMensagens] = useState<Mensagem[]>([])
   const [carregando, setCarregando] = useState(false)
+  const [modeloPronto, setModeloPronto] = useState(false)
   const fimRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Começa a baixar o modelo ao abrir a página, para a primeira pergunta não esperar o download.
+    embeddings()
+      .then((m) => m.carregarModelo())
+      .then(() => setModeloPronto(true))
+      .catch(() => {}) // a falha reaparece, com mensagem, ao perguntar
+  }, [])
 
   useEffect(() => {
     fimRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
@@ -28,8 +40,10 @@ export default function Index() {
     setMensagens((m) => [...m, { id: crypto.randomUUID(), role: 'user', content: pergunta }])
     setCarregando(true)
     try {
+      const [embedding] = await (await embeddings()).gerarEmbeddings([pergunta], 'query')
+      setModeloPronto(true)
       const { data, error } = await supabase.functions.invoke<{ resposta: string; fontes: Fonte[] }>('chat', {
-        body: { pergunta },
+        body: { pergunta, embedding },
       })
       if (error) throw error
       if (!data) throw new Error('Resposta vazia')
@@ -85,7 +99,9 @@ export default function Index() {
           {carregando && (
             <p className="flex items-center gap-2 text-sm text-muted-foreground" role="status">
               <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
-              Consultando os documentos…
+              {modeloPronto
+                ? 'Consultando os documentos…'
+                : 'Preparando o modelo de busca (~113 MB, só na primeira visita)…'}
             </p>
           )}
         </section>

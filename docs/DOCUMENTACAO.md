@@ -22,7 +22,7 @@ O projeto recria, em tecnologia web, um chatbot de referência feito em Python (
 |---|---|
 | Interface | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui (Radix), react-markdown |
 | PDF | pdfjs-dist (extração de texto no navegador) |
-| Embeddings | gte-small, 384 dimensões (`@huggingface/transformers` no navegador; `Supabase.ai` na função `chat`) |
+| Embeddings | multilingual-e5-small, 384 dimensões, gerados no navegador com `@huggingface/transformers` (trechos e pergunta) |
 | Servidor | Supabase Edge Functions (Deno) |
 | Banco | Supabase Postgres + pgvector, índice HNSW (cosseno) |
 | LLM | Groq, `openai/gpt-oss-120b`, temperatura 0 |
@@ -33,7 +33,8 @@ O projeto recria, em tecnologia web, um chatbot de referência feito em Python (
 
 ```
 PERGUNTA
-navegador ──> função chat ──> embedding da pergunta (gte-small)
+navegador: embedding da pergunta (multilingual-e5-small, prefixo "query: ")
+navegador ──> função chat (pergunta + vetor)
                           ──> match_documents: 5 trechos mais parecidos (pgvector)
                           ──> Groq: resposta usando só os trechos
           <── resposta + fontes (documento, categoria, página)
@@ -93,11 +94,12 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 | Documentos com 0 trechos | Uploads interrompidos pelo erro 546 | Reenvio; o mesmo nome substitui o registro anterior |
 | Respostas citavam páginas inexistentes (ex.: "página 377" num PDF de 301 páginas) | O modelo confundia o número da pergunta ("377 —") com o da página | O modelo não escreve mais fontes; as páginas exibidas vêm do banco |
 | "Não encontrei" acompanhado de lista de fontes | A lista mostrava os trechos consultados mesmo sem resposta | Sem resposta, a lista de fontes fica vazia |
-| Algumas perguntas simples não são respondidas (ex.: "Quem está obrigado a declarar o IR?", "O que é MEI?") | **Em aberto.** O gte-small foi treinado em inglês e separa mal trechos em português; além disso, o documento usa outras palavras ("apresentar a Declaração de Ajuste Anual") | Testado sem sucesso: busca por palavras, busca híbrida e reescrita da pergunta. Um modelo multilíngue (multilingual-e5-small) resolveu as perguntas de MEI, mas não a de obrigatoriedade. Ver seção 10 |
+| Algumas perguntas simples não são respondidas (ex.: "Quem está obrigado a declarar o IR?", "O que é MEI?") | O gte-small foi treinado em inglês e separa mal trechos em português; além disso, o documento usa outras palavras ("apresentar a Declaração de Ajuste Anual") | Testado sem sucesso: busca por palavras, busca híbrida e reescrita da pergunta. **Adotado:** multilingual-e5-small no navegador, que resolveu as perguntas de MEI na avaliação. A de obrigatoriedade do IR segue em aberto (ver seção 10) |
 
 ## 10. Próximos passos
 
-- **Melhorar a busca (prioridade).** Avaliação com os 4 PDFs reais (1.669 trechos) mostrou que o gte-small erra perguntas comuns. Caminhos: modelo de embeddings multilíngue (no navegador, ~113 MB, ou por API) e trechos cortados por pergunta em vez de tamanho fixo. Exige reenviar os PDFs.
+- **Melhorar a busca.** Com o modelo multilíngue, "Quem está obrigado a declarar o IR?" ainda não acha a pergunta 001 do P&R IRPF. Próximo passo: cortar os trechos por pergunta em vez de tamanho fixo.
+- O chat baixa ~113 MB (modelo) na primeira visita; fica em cache no navegador.
 - Concluir a carga da base e registrar uma demonstração com resposta e fontes.
 - Medir a qualidade com uma lista de perguntas de resposta conhecida.
 - Histórico de conversa, resposta em streaming e filtro por categoria.
@@ -109,4 +111,4 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 - Supabase: documentação de pgvector, Edge Functions e Row Level Security (https://supabase.com/docs).
 - Groq: documentação da API (https://console.groq.com/docs).
 - LangChain: `RecursiveCharacterTextSplitter`, base do divisor de texto.
-- Modelo gte-small (https://huggingface.co/Supabase/gte-small).
+- Modelo multilingual-e5-small (https://huggingface.co/intfloat/multilingual-e5-small; versão ONNX Xenova/multilingual-e5-small).

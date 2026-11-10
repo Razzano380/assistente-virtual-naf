@@ -136,12 +136,12 @@ function BaseDeConhecimento() {
           acao: 'criar', nome: file.name, categoria, total_paginas: paginas.length,
         })
 
-        setProgresso((p) => p && { ...p, etapa: 'Carregando o modelo de embeddings (~35 MB na 1ª vez)', totalChunks: chunks.length })
+        setProgresso((p) => p && { ...p, etapa: 'Carregando o modelo de embeddings (~113 MB na 1ª vez)', totalChunks: chunks.length })
         await carregarModelo()
         setProgresso((p) => p && { ...p, etapa: 'Gerando embeddings e enviando' })
         for (let i = 0; i < chunks.length; i += LOTE) {
           const lote = chunks.slice(i, i + LOTE)
-          const vetores = await gerarEmbeddings(lote.map((c) => c.conteudo))
+          const vetores = await gerarEmbeddings(lote.map((c) => c.conteudo), 'passage')
           await invokeIngest({
             acao: 'chunks',
             document_id,

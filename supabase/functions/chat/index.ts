@@ -1,9 +1,6 @@
-// Chat RAG público: pergunta → embedding gte-small → top 5 no pgvector → Groq GPT-OSS-120B.
+// Chat RAG público: embedding da pergunta (multilingual-e5-small, gerado no navegador) → top 5 no pgvector
+// → Groq GPT-OSS-120B. O Supabase.ai só oferece o gte-small, que é fraco em português.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4'
-
-declare const Supabase: {
-  ai: { Session: new (model: string) => { run: (input: string, opts: Record<string, unknown>) => Promise<number[]> } }
-}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,7 +25,7 @@ Quando fizer sentido, lembre que a orientação é informativa e não substitui 
 Contexto dos documentos:
 {contexto}`
 
-const session = new Supabase.ai.Session('gte-small')
+const DIMENSOES = 384
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
@@ -48,7 +45,12 @@ Deno.serve(async (req) => {
     const groqKey = Deno.env.get('GROQ_API_KEY')
     if (!groqKey) return json({ error: 'Chave GROQ_API_KEY não configurada' }, 500)
 
-    const embedding = await session.run(pergunta, { mean_pool: true, normalize: true })
+    const embedding = body?.embedding
+    if (
+      !Array.isArray(embedding) || embedding.length !== DIMENSOES ||
+      !embedding.every((x: unknown) => typeof x === 'number' && Number.isFinite(x))
+    )
+      return json({ error: 'Atualize a página: o aplicativo está desatualizado.' }, 400)
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
     const { data, error } = await admin.rpc('match_documents', {
       query_embedding: JSON.stringify(embedding),

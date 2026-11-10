@@ -10,12 +10,12 @@ Chatbot RAG que responde dúvidas sobre IRPF, MEI e DIRF **apenas** com base em 
 ## Fluxo RAG
 
 ```
-Pergunta → embedding (gte-small, 384 dim) → busca no pgvector (top 5, cosseno)
+Pergunta → embedding no navegador (multilingual-e5-small, 384 dim) → busca no pgvector (top 5, cosseno)
         → prompt + contexto → Groq GPT-OSS-120B (temperature 0) → resposta com fontes
 ```
 
 Ingestão (página `/admin`): PDF → `pdfjs-dist` no navegador (texto por página) → splitter recursivo 1000/200
-→ embeddings gte-small gerados no navegador (`@huggingface/transformers`, ~35 MB baixados na 1ª vez;
+→ embeddings multilingual-e5-small gerados no navegador (`@huggingface/transformers`, ~113 MB baixados na 1ª vez;
 o limite de ~2 s de CPU do plano gratuito impede gerá-los na Edge Function) → `ingest` grava em `chunks`.
 
 | Arquivo | Papel |
