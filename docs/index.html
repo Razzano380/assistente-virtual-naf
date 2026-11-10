@@ -31,6 +31,9 @@ h2{font-size:28px;margin:0 0 8px}
 h3{font-size:18px;margin:0 0 6px}
 .sub{color:var(--muted);margin:0 0 28px;max-width:720px}
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:900px){.grid.c4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.grid.c4{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
 .card p{margin:0;color:var(--muted)}
 .card ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
@@ -60,6 +63,9 @@ code{font-family:Consolas,"Cascadia Code",monospace;font-size:.92em;color:#d6b4f
 .time div{border-left:2px solid var(--pri);padding:2px 0 2px 16px}
 .time time{font-size:13px;color:var(--pri);font-weight:700}
 .time p{margin:2px 0 0;color:var(--muted)}
+.time ul{margin:4px 0 0;padding-left:18px;color:var(--muted)}
+.time li{margin:2px 0}
+.note ul{color:var(--muted)}
 footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
 @media (max-width:640px){.hero{padding-top:48px;padding-bottom:36px}section{padding:40px 0}nav{gap:14px}}
 </style>
@@ -85,7 +91,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
 <div class="wrap hero">
   <span class="tag">Projeto acadêmico · FMU · em desenvolvimento</span>
   <h1>Assistente Virtual NAF</h1>
-  <p class="lead">Um chatbot que responde dúvidas sobre Imposto de Renda, MEI e DIRF usando somente os documentos oficiais da Receita Federal, e mostra de qual página veio cada resposta.</p>
+  <p class="lead">Um assistente virtual inteligente que esclarece dúvidas sobre Imposto de Renda, MEI e DIRF com base exclusivamente na documentação oficial da Receita Federal, indicando as fontes e páginas que fundamentam cada resposta.</p>
   <div class="btns">
     <a class="btn pri" href="https://github.com/Razzano380/assistente-virtual-naf">Ver código no GitHub</a>
     <a class="btn" href="#demonstracao">Ver demonstração</a>
@@ -106,7 +112,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
   <div class="wrap">
     <h2>Sobre o projeto</h2>
     <p class="sub">Contexto, motivação e para quem ele serve.</p>
-    <div class="grid">
+    <div class="grid c4">
       <div class="card"><h3>Contexto acadêmico</h3><p>Trabalho desenvolvido na FMU. Recria, em tecnologia web, um chatbot de referência feito em Python (Streamlit, LangChain, Chroma e Groq), mantendo os mesmos parâmetros de busca.</p></div>
       <div class="card"><h3>Motivação</h3><p>Praticar a técnica RAG (geração com recuperação de documentos) num caso real: informação fiscal, em que resposta inventada causa prejuízo.</p></div>
       <div class="card"><h3>Justificativa</h3><p>Um chatbot comum pode "alucinar". Aqui a resposta fica presa ao documento oficial e traz a página de origem, para a pessoa conferir.</p></div>
@@ -129,7 +135,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <tr><td>Banco de dados</td><td>Supabase Postgres + pgvector (índice HNSW)</td><td>Guarda os trechos e faz a busca por similaridade</td></tr>
       <tr><td>Modelo de linguagem</td><td>Groq, <code>openai/gpt-oss-120b</code>, temperatura 0</td><td>Escreve a resposta a partir dos trechos encontrados</td></tr>
       <tr><td>Acesso</td><td>Supabase Auth, papéis e RLS</td><td>Só administradores alteram a base de conhecimento</td></tr>
-      <tr><td>Testes</td><td>Vitest</td><td>5 testes do divisor de texto</td></tr>
+      <tr><td>Testes</td><td>Vitest</td><td>9 testes do divisor de texto</td></tr>
     </table>
     </div>
   </div>
@@ -153,12 +159,18 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
     <div class="flow">
       <div class="step"><span>1</span><b>Upload</b>O administrador envia o PDF e escolhe a categoria.</div>
       <div class="step"><span>2</span><b>Texto</b>O navegador extrai o texto página a página.</div>
-      <div class="step"><span>3</span><b>Trechos</b>Blocos de 1000 caracteres com 200 de sobreposição.</div>
+      <div class="step"><span>3</span><b>Trechos</b>Um bloco para cada pergunta do documento oficial.</div>
       <div class="step"><span>4</span><b>Vetores</b>O navegador gera o embedding de cada trecho.</div>
       <div class="step"><span>5</span><b>Banco</b>A função confere a permissão e grava.</div>
     </div>
 
-    <p class="note"><b>Estágio atual, sem maquiagem:</b> os 4 PDFs estão carregados (1.867 trechos, um bloco por pergunta) e o assistente responde, com as páginas de origem, as 5 perguntas do teste: "Quem está obrigado a declarar o IR?", "O que é MEI?", "Quem pode ser MEI?", "Posso deduzir despesas médicas?" e "Qual o prazo de entrega da DIRF 2025?". Chegar aqui exigiu trocar o modelo de busca (o primeiro, gte-small, era treinado em inglês) e cortar os documentos por pergunta. São 5 perguntas, não uma avaliação ampla: a margem da de obrigatoriedade é pequena (6º trecho de 6).</p>
+    <div class="note"><b>Estágio atual</b>
+      <ul style="margin:6px 0 0;padding-left:18px">
+        <li>Base carregada: 4 PDFs da Receita Federal, divididos em 1.867 trechos.</li>
+        <li>Teste com 74 perguntas cuja resposta já se conhece: a busca encontrou o trecho certo em 68 delas (92%). As outras 6 estão sendo corrigidas.</li>
+        <li>O assistente ainda roda só no computador do desenvolvedor, sem endereço público.</li>
+      </ul>
+    </div>
 
     <div class="shots">
       <figure><img src="img/chat.png" alt="Tela inicial do chat, com título, quatro perguntas sugeridas e campo para digitar a dúvida" loading="lazy"><figcaption>Tela do chat, com perguntas sugeridas.</figcaption></figure>
@@ -182,7 +194,9 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
           <li>Upload de PDF com barra de progresso, lista e exclusão</li>
           <li>Divisor de texto com testes automatizados</li>
           <li>Banco, permissões e funções publicados no Supabase</li>
-          <li>Base carregada: 4 PDFs, 1.669 trechos</li>
+          <li>Base carregada: 4 PDFs, 1.867 trechos</li>
+          <li>Verificação em duas etapas e limite de uso no chat</li>
+          <li>Avaliação automática da busca com 74 perguntas</li>
         </ul>
       </div>
       <div class="card">
@@ -196,7 +210,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="card">
         <h3>Próximas entregas</h3>
         <ul class="status todo">
-          <li>Avaliação de qualidade com perguntas de resposta conhecida</li>
+          <li>Teste de ponta a ponta das respostas do chat</li>
           <li>Histórico da conversa</li>
           <li>Resposta aparecendo aos poucos (streaming)</li>
           <li>Filtro por categoria na busca</li>
@@ -209,7 +223,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
 <section id="documentacao">
   <div class="wrap">
     <h2>Documentação técnica</h2>
-    <p class="sub">Resumo para quem quer entender ou rodar o projeto. A versão completa está em <a href="https://github.com/Razzano380/assistente-virtual-naf/blob/main/docs/DOCUMENTACAO.md">docs/DOCUMENTACAO.md</a>.</p>
+    <p class="sub">Versão completa: <a href="https://github.com/Razzano380/assistente-virtual-naf/blob/main/docs/DOCUMENTACAO.md">DOCUMENTACAO.md</a>.</p>
 
     <h3>Estrutura dos arquivos</h3>
 <pre>src/
@@ -247,15 +261,22 @@ npm test                # roda os testes</pre>
     <h2>Evolução do projeto</h2>
     <p class="sub">Histórico e principais melhorias.</p>
     <div class="time">
-      <div><time datetime="2026-11-08">08/11/2026</time><p>Análise do chatbot de referência em Python e definição dos requisitos da versão web.</p></div>
-      <div><time datetime="2026-11-08">08/11/2026</time><p>Primeira versão: chat, área de administração, divisor de texto e testes.</p></div>
-      <div><time datetime="2026-11-09">09/11/2026</time><p>Banco de dados e funções publicados no Supabase.</p></div>
-      <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: os embeddings dos documentos passaram a ser gerados no navegador. No servidor gratuito, o envio de PDFs estourava o limite de processamento (erro 546).</p></div>
-      <div><time datetime="2026-11-09">09/11/2026</time><p>Repositório público e esta página de apresentação.</p></div>
-      <div><time datetime="2026-11-09">09/11/2026</time><p>Base carregada e primeiros testes reais. Correção: a IA citava páginas inexistentes (confundia número de pergunta com número de página); agora as páginas vêm do banco. Diagnóstico: o modelo de busca erra perguntas comuns em português, com comparação medida entre modelos.</p></div>
-      <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: troca do modelo de busca gte-small (inglês) pelo multilingual-e5-small, rodando no navegador. Base reprocessada (1.669 trechos); as perguntas de MEI passaram a ser respondidas.</p></div>
-      <div><time datetime="2026-11-09">09/11/2026</time><p>Trechos cortados por pergunta (cada trecho começa com o título da pergunta) e busca com 6 trechos, Base reprocessada: as 5 perguntas do teste passaram a ser respondidas, inclusive a de obrigatoriedade do IR.</p></div>
-      <div><time datetime="2026-11-10">10/11/2026</time><p>Segurança: verificação em duas etapas para o administrador, limite de uso no chat e cadastro público desligado. Avaliação automática da busca com um gabarito de 74 perguntas: 68 acertos (92%).</p></div>
+      <div><time datetime="2026-11-08">08/11/2026</time><ul>
+        <li>Análise do chatbot de referência em Python e definição dos requisitos da versão web.</li>
+        <li>Primeira versão: chat, área de administração, divisor de texto e testes.</li>
+      </ul></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><ul>
+        <li>Banco de dados e funções publicados no Supabase.</li>
+        <li>Embeddings dos documentos gerados no navegador: no servidor gratuito, o envio de PDFs estourava o limite de processamento (erro 546).</li>
+        <li>Repositório público e esta página de apresentação.</li>
+        <li>Base carregada e primeiros testes reais. A IA citava páginas inexistentes; agora as páginas vêm do banco.</li>
+        <li>Modelo de busca trocado (gte-small, treinado em inglês, por multilingual-e5-small), e as perguntas de MEI passaram a ser respondidas.</li>
+        <li>Trechos cortados por pergunta e busca com 6 trechos, e "Quem está obrigado a declarar o IR?" passou a ser respondida.</li>
+      </ul></div>
+      <div><time datetime="2026-11-10">10/11/2026</time><ul>
+        <li>Segurança: verificação em duas etapas para o administrador, limite de uso no chat e cadastro público desligado.</li>
+        <li>Avaliação automática da busca com 74 perguntas: 68 acertos (92%).</li>
+      </ul></div>
     </div>
   </div>
 </section>
