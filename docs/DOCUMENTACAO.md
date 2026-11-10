@@ -69,6 +69,7 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 5. Correção do limite de processamento na ingestão (ver seção 9).
 6. Repositório público e página de apresentação.
 7. Carga dos 4 PDFs (1.669 trechos) e primeiros testes reais: correção das citações de página e diagnóstico da qualidade da busca.
+8. Troca para o modelo multilingual-e5-small, reprocessamento da base e novo teste (4 de 5 perguntas respondidas).
 
 ## 7. Funcionalidades implementadas
 
@@ -94,7 +95,7 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 | Documentos com 0 trechos | Uploads interrompidos pelo erro 546 | Reenvio; o mesmo nome substitui o registro anterior |
 | Respostas citavam páginas inexistentes (ex.: "página 377" num PDF de 301 páginas) | O modelo confundia o número da pergunta ("377 —") com o da página | O modelo não escreve mais fontes; as páginas exibidas vêm do banco |
 | "Não encontrei" acompanhado de lista de fontes | A lista mostrava os trechos consultados mesmo sem resposta | Sem resposta, a lista de fontes fica vazia |
-| Algumas perguntas simples não são respondidas (ex.: "Quem está obrigado a declarar o IR?", "O que é MEI?") | O gte-small foi treinado em inglês e separa mal trechos em português; além disso, o documento usa outras palavras ("apresentar a Declaração de Ajuste Anual") | Testado sem sucesso: busca por palavras, busca híbrida e reescrita da pergunta. **Adotado:** multilingual-e5-small no navegador, que resolveu as perguntas de MEI na avaliação. A de obrigatoriedade do IR segue em aberto (ver seção 10) |
+| Algumas perguntas simples não são respondidas (ex.: "Quem está obrigado a declarar o IR?", "O que é MEI?") | O gte-small foi treinado em inglês e separa mal trechos em português; além disso, o documento usa outras palavras ("apresentar a Declaração de Ajuste Anual") | Testado sem sucesso: busca por palavras, busca híbrida e reescrita da pergunta. **Adotado:** multilingual-e5-small no navegador. Com a base reprocessada, o chat responde "O que é MEI?", "Quem pode ser MEI?", despesas médicas e prazo da DIRF 2025. A de obrigatoriedade do IR segue em aberto (ver seção 10) |
 
 ## 10. Próximos passos
 

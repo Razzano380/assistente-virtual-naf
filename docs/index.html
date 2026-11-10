@@ -158,7 +158,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="step"><span>5</span><b>Banco</b>A função confere a permissão e grava.</div>
     </div>
 
-    <p class="note"><b>Estágio atual, sem maquiagem:</b> os 4 PDFs estão carregados (1.669 trechos) e o assistente já responde perguntas como "Posso deduzir despesas médicas?" e "Qual o limite de faturamento do MEI?", com as páginas de origem. Perguntas simples como "Quem está obrigado a declarar o IR?" ainda não encontravam a resposta com o primeiro modelo de busca (gte-small, treinado em inglês). Ele foi trocado por um modelo multilíngue, que em testes acertou as perguntas de MEI; a de obrigatoriedade do IR segue em aberto.</p>
+    <p class="note"><b>Estágio atual, sem maquiagem:</b> os 4 PDFs estão carregados (1.669 trechos) e o assistente já responde perguntas como "Posso deduzir despesas médicas?" e "Qual o limite de faturamento do MEI?", com as páginas de origem. Perguntas simples como "Quem está obrigado a declarar o IR?" ainda não encontravam a resposta com o primeiro modelo de busca (gte-small, treinado em inglês). Ele foi trocado por um modelo multilíngue e a base foi reprocessada: agora "O que é MEI?", "Quem pode ser MEI?" e "Qual o prazo de entrega da DIRF 2025?" também são respondidas. A de obrigatoriedade do IR segue em aberto.</p>
 
     <div class="shots">
       <figure><img src="img/chat.png" alt="Tela inicial do chat, com título, quatro perguntas sugeridas e campo para digitar a dúvida" loading="lazy"><figcaption>Tela do chat, com perguntas sugeridas.</figcaption></figure>
@@ -253,7 +253,7 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: os embeddings dos documentos passaram a ser gerados no navegador. No servidor gratuito, o envio de PDFs estourava o limite de processamento (erro 546).</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Repositório público e esta página de apresentação.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Base carregada e primeiros testes reais. Correção: a IA citava páginas inexistentes (confundia número de pergunta com número de página); agora as páginas vêm do banco. Diagnóstico: o modelo de busca erra perguntas comuns em português, com comparação medida entre modelos.</p></div>
-      <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: troca do modelo de busca gte-small (inglês) pelo multilingual-e5-small, rodando no navegador. A troca exige reprocessar os documentos com o novo modelo.</p></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: troca do modelo de busca gte-small (inglês) pelo multilingual-e5-small, rodando no navegador. Base reprocessada (1.669 trechos); as perguntas de MEI passaram a ser respondidas.</p></div>
     </div>
   </div>
 </section>
