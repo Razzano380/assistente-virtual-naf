@@ -1,4 +1,4 @@
-# Assistente Virtual NAF
+﻿# Assistente Virtual NAF
 
 Chatbot RAG que responde dúvidas sobre IRPF, MEI e DIRF **apenas** com base em PDFs oficiais da Receita Federal.
 É uma recriação do chatbot "Trabalho Garantido" (Streamlit + LangChain + Chroma + Groq) na stack Lovable.
@@ -10,23 +10,23 @@ Chatbot RAG que responde dúvidas sobre IRPF, MEI e DIRF **apenas** com base em 
 ## Fluxo RAG
 
 ```
-Pergunta → embedding no navegador (multilingual-e5-small, 384 dim) → busca no pgvector (top 5, cosseno)
+Pergunta → embedding no navegador (multilingual-e5-small, 384 dim) → busca no pgvector (top 6, cosseno)
         → prompt + contexto → Groq GPT-OSS-120B (temperature 0) → resposta com fontes
 ```
 
-Ingestão (página `/admin`): PDF → `pdfjs-dist` no navegador (texto por página) → splitter recursivo 1000/200
+Ingestão (página `/admin`): PDF → `pdfjs-dist` no navegador (texto por página) → um trecho por pergunta numerada (sem numeração: 1000/200)
 → embeddings multilingual-e5-small gerados no navegador (`@huggingface/transformers`, ~113 MB baixados na 1ª vez;
 o limite de ~2 s de CPU do plano gratuito impede gerá-los na Edge Function) → `ingest` grava em `chunks`.
 
 | Arquivo | Papel |
 |---|---|
 | `src/lib/pdf.ts` | Extrai o texto de cada página (mantém as quebras de linha) |
-| `src/lib/chunker.ts` | Port do `RecursiveCharacterTextSplitter` (1000 / 200) |
+| `src/lib/chunker.ts` | Um bloco por pergunta numerada (`chunkDocumento`); sem numeração, port do `RecursiveCharacterTextSplitter` (1000 / 200) |
 | `src/pages/Index.tsx` + `src/components/chat/*` | Chat público |
 | `src/pages/Admin.tsx` | Login, upload de PDFs, lista e exclusão de documentos |
 | `supabase/migrations/*.sql` | pgvector, tabelas, `match_documents`, papéis e RLS |
 | `supabase/functions/ingest` | Cria o documento e grava os chunks com embedding (somente admin) |
-| `supabase/functions/chat` | Busca top 5 + chamada à Groq (pública) |
+| `supabase/functions/chat` | Busca top 6 + chamada à Groq (pública) |
 
 ## Configuração
 

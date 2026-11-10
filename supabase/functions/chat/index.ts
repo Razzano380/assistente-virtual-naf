@@ -8,7 +8,9 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-const K = 5 // mais trechos estouram o limite de tokens por minuto da Groq no plano gratuito (erro 429)
+// 6, não 5: com um trecho por pergunta, "Quem está obrigado a declarar o IR?" acha a pergunta 001 em 6º lugar.
+// 8 estourou o limite de tokens por minuto da Groq no plano gratuito (erro 429).
+const K = 6
 const MAX_PERGUNTA = 1000
 const NAO_ENCONTREI = 'Não encontrei essa informação nos documentos do NAF.'
 

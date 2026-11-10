@@ -1,4 +1,4 @@
-# Documentação do projeto — Assistente Virtual NAF
+﻿# Documentação do projeto — Assistente Virtual NAF
 
 Atualizada em 09/11/2026.
 
@@ -35,7 +35,7 @@ O projeto recria, em tecnologia web, um chatbot de referência feito em Python (
 PERGUNTA
 navegador: embedding da pergunta (multilingual-e5-small, prefixo "query: ")
 navegador ──> função chat (pergunta + vetor)
-                          ──> match_documents: 5 trechos mais parecidos (pgvector)
+                          ──> match_documents: 6 trechos mais parecidos (pgvector)
                           ──> Groq: resposta usando só os trechos
           <── resposta + fontes (documento, categoria, página)
 
@@ -44,7 +44,7 @@ PDF ──> texto por página (pdfjs) ──> trechos 1000/200 ──> embedding
     ──> função ingest (confere login e papel admin, valida) ──> tabela chunks
 ```
 
-Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por pergunta, temperatura 0. Mais de 5 trechos estoura o limite de tokens por minuto da Groq no plano gratuito (erro 429).
+Parâmetros: **um bloco por pergunta** do documento (marcadores "001 — " no P&R IRPF e "1.8. " na Dirf e no P&R MEI), cada trecho com até 1000 caracteres e sempre começando pelo título da pergunta; documentos sem perguntas numeradas (P&R gov_MEI) usam trechos de 1000 caracteres com 200 de sobreposição. Linhas do sumário são descartadas. 6 trechos por pergunta, temperatura 0; 8 trechos estouraram o limite de tokens por minuto da Groq no plano gratuito (erro 429).
 
 ### Banco de dados
 
@@ -70,6 +70,7 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 6. Repositório público e página de apresentação.
 7. Carga dos 4 PDFs (1.669 trechos) e primeiros testes reais: correção das citações de página e diagnóstico da qualidade da busca.
 8. Troca para o modelo multilingual-e5-small, reprocessamento da base e novo teste (4 de 5 perguntas respondidas).
+9. Trechos cortados por pergunta e busca com 6 trechos (avaliação local: a pergunta 001 do IRPF passou a entrar nos resultados).
 
 ## 7. Funcionalidades implementadas
 
@@ -95,11 +96,11 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 | Documentos com 0 trechos | Uploads interrompidos pelo erro 546 | Reenvio; o mesmo nome substitui o registro anterior |
 | Respostas citavam páginas inexistentes (ex.: "página 377" num PDF de 301 páginas) | O modelo confundia o número da pergunta ("377 —") com o da página | O modelo não escreve mais fontes; as páginas exibidas vêm do banco |
 | "Não encontrei" acompanhado de lista de fontes | A lista mostrava os trechos consultados mesmo sem resposta | Sem resposta, a lista de fontes fica vazia |
-| Algumas perguntas simples não são respondidas (ex.: "Quem está obrigado a declarar o IR?", "O que é MEI?") | O gte-small foi treinado em inglês e separa mal trechos em português; além disso, o documento usa outras palavras ("apresentar a Declaração de Ajuste Anual") | Testado sem sucesso: busca por palavras, busca híbrida e reescrita da pergunta. **Adotado:** multilingual-e5-small no navegador. Com a base reprocessada, o chat responde "O que é MEI?", "Quem pode ser MEI?", despesas médicas e prazo da DIRF 2025. A de obrigatoriedade do IR segue em aberto (ver seção 10) |
+| Algumas perguntas simples não são respondidas (ex.: "Quem está obrigado a declarar o IR?", "O que é MEI?") | O gte-small foi treinado em inglês e separa mal trechos em português; além disso, o documento usa outras palavras ("apresentar a Declaração de Ajuste Anual") | Testado sem sucesso: busca por palavras, busca híbrida e reescrita da pergunta. **Adotado:** multilingual-e5-small no navegador. Com a base reprocessada, o chat responde "O que é MEI?", "Quem pode ser MEI?", despesas médicas e prazo da DIRF 2025. A de obrigatoriedade do IR seguia falhando: o modelo acha a pergunta 031 ("Meu Imposto de Renda") mais parecida. **Depois:** trechos por pergunta e busca com 6 trechos (ver seção 10) |
 
 ## 10. Próximos passos
 
-- **Melhorar a busca.** Com o modelo multilíngue, "Quem está obrigado a declarar o IR?" ainda não acha a pergunta 001 do P&R IRPF. Próximo passo: cortar os trechos por pergunta em vez de tamanho fixo.
+- **Confirmar a busca no chat.** Os trechos agora são cortados por pergunta. Na avaliação local, "Quem está obrigado a declarar o IR?" acha a pergunta 001 do P&R IRPF em 6º lugar, por isso a busca passou a 6 trechos. É uma margem pequena: falta reenviar os PDFs e confirmar no chat. Se não bastar, o caminho é um modelo de embeddings maior ou um reordenador (reranker).
 - O chat baixa ~113 MB (modelo) na primeira visita; fica em cache no navegador.
 - Concluir a carga da base e registrar uma demonstração com resposta e fontes.
 - Medir a qualidade com uma lista de perguntas de resposta conhecida.

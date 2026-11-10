@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { chunkPages, splitText } from './chunker'
+import { chunkDocumento, chunkPages, splitText } from './chunker'
 
 const texto = Array.from({ length: 400 }, (_, i) => `palavra${i}`).join(' ').slice(0, 2500)
 
@@ -35,5 +35,38 @@ describe('chunkPages', () => {
     ])
     expect(out[0]).toEqual({ conteudo: 'curto', pagina: 1 })
     expect(out.slice(1).every((c) => c.pagina === 2)).toBe(true)
+  })
+})
+
+describe('chunkDocumento (um bloco por pergunta)', () => {
+  const perguntas = Array.from({ length: 12 }, (_, i) => `${String(i + 1).padStart(3, '0')} — Pergunta ${i + 1}\ncontinua aqui?\nResposta ${i + 1}.`)
+  const paginas = [
+    { pagina: 1, texto: 'Capa do documento\nSumário\n1.1 Pergunta do sumário?.........3' },
+    { pagina: 2, texto: perguntas.slice(0, 6).join('\n') },
+    { pagina: 3, texto: perguntas.slice(6).join('\n') + '\n' + `013 — Pergunta longa?\n${texto}` },
+  ]
+  const out = chunkDocumento(paginas)
+
+  it('cada trecho começa com o título completo da pergunta e traz a página certa', () => {
+    expect(out).toContainEqual({ conteudo: '001 — Pergunta 1 continua aqui?\nResposta 1.', pagina: 2 })
+    expect(out).toContainEqual({ conteudo: '007 — Pergunta 7 continua aqui?\nResposta 7.', pagina: 3 })
+  })
+
+  it('resposta longa: todos os trechos repetem o título e cabem em 1000 caracteres', () => {
+    const longa = out.filter((c) => c.conteudo.startsWith('013 —'))
+    expect(longa.length).toBeGreaterThan(2)
+    for (const c of longa) {
+      expect(c.conteudo.startsWith('013 — Pergunta longa?\n')).toBe(true)
+      expect(c.conteudo.length).toBeLessThanOrEqual(1000)
+    }
+  })
+
+  it('mantém o preâmbulo e descarta linhas do sumário', () => {
+    expect(out[0]).toEqual({ conteudo: 'Capa do documento\nSumário', pagina: 1 })
+    expect(out.some((c) => c.conteudo.includes('.....'))).toBe(false)
+  })
+
+  it('sem perguntas numeradas, corta por tamanho', () => {
+    expect(chunkDocumento([{ pagina: 1, texto }])).toEqual(chunkPages([{ pagina: 1, texto }]))
   })
 })

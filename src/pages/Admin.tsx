@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+﻿import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import type { Session } from '@supabase/supabase-js'
 import { ArrowLeft, Loader2, LogOut, Trash2, Upload } from 'lucide-react'
@@ -14,7 +14,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { chunkPages } from '@/lib/chunker'
+import { chunkDocumento } from '@/lib/chunker'
 import { extrairPaginas } from '@/lib/pdf'
 import { carregarModelo, gerarEmbeddings } from '@/lib/embeddings'
 import { mensagemDeErro, supabase } from '@/integrations/supabase/client'
@@ -129,7 +129,7 @@ function BaseDeConhecimento() {
         const paginas = await extrairPaginas(file, (pagina, totalPaginas) =>
           setProgresso((p) => p && { ...p, pagina, totalPaginas }),
         )
-        const chunks = chunkPages(paginas)
+        const chunks = chunkDocumento(paginas)
         if (chunks.length === 0) throw new Error('Nenhum texto encontrado (PDF escaneado?)')
 
         const { document_id } = await invokeIngest<{ document_id: string }>({

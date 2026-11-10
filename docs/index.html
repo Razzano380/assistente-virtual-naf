@@ -144,7 +144,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
     <div class="flow">
       <div class="step"><span>1</span><b>Pergunta</b>A pessoa digita a dúvida no chat.</div>
       <div class="step"><span>2</span><b>Embedding</b>O navegador transforma a pergunta num vetor de 384 números.</div>
-      <div class="step"><span>3</span><b>Busca</b>O banco devolve os 5 trechos mais parecidos.</div>
+      <div class="step"><span>3</span><b>Busca</b>O banco devolve os 6 trechos mais parecidos.</div>
       <div class="step"><span>4</span><b>Resposta</b>A IA responde usando só esses trechos.</div>
       <div class="step"><span>5</span><b>Fontes</b>O chat mostra documento, categoria e página.</div>
     </div>
@@ -188,7 +188,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="card">
         <h3>Em desenvolvimento</h3>
         <ul class="status todo">
-          <li>Busca mais precisa em português: trechos cortados por pergunta</li>
+          <li>Busca mais precisa: trechos cortados por pergunta (implementado; falta reenviar os PDFs e confirmar no chat)</li>
           <li>Captura de tela de uma resposta com fontes</li>
           <li>Publicação do aplicativo em um endereço público</li>
         </ul>
@@ -254,6 +254,7 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Repositório público e esta página de apresentação.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Base carregada e primeiros testes reais. Correção: a IA citava páginas inexistentes (confundia número de pergunta com número de página); agora as páginas vêm do banco. Diagnóstico: o modelo de busca erra perguntas comuns em português, com comparação medida entre modelos.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: troca do modelo de busca gte-small (inglês) pelo multilingual-e5-small, rodando no navegador. Base reprocessada (1.669 trechos); as perguntas de MEI passaram a ser respondidas.</p></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><p>Trechos cortados por pergunta (cada trecho começa com o título da pergunta) e busca com 6 trechos, para alcançar a pergunta de obrigatoriedade do IR. Aguarda reenvio dos PDFs.</p></div>
     </div>
   </div>
 </section>
