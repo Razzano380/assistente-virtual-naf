@@ -158,7 +158,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="step"><span>5</span><b>Banco</b>A função confere a permissão e grava.</div>
     </div>
 
-    <p class="note"><b>Estágio atual, sem maquiagem:</b> os 4 PDFs estão carregados (1.669 trechos) e o assistente já responde perguntas como "Posso deduzir despesas médicas?" e "Qual o limite de faturamento do MEI?", com as páginas de origem. Perguntas simples como "Quem está obrigado a declarar o IR?" ainda não encontravam a resposta com o primeiro modelo de busca (gte-small, treinado em inglês). Ele foi trocado por um modelo multilíngue e a base foi reprocessada: agora "O que é MEI?", "Quem pode ser MEI?" e "Qual o prazo de entrega da DIRF 2025?" também são respondidas. A de obrigatoriedade do IR segue em aberto.</p>
+    <p class="note"><b>Estágio atual, sem maquiagem:</b> os 4 PDFs estão carregados (1.867 trechos, um bloco por pergunta) e o assistente responde, com as páginas de origem, as 5 perguntas do teste: "Quem está obrigado a declarar o IR?", "O que é MEI?", "Quem pode ser MEI?", "Posso deduzir despesas médicas?" e "Qual o prazo de entrega da DIRF 2025?". Chegar aqui exigiu trocar o modelo de busca (o primeiro, gte-small, era treinado em inglês) e cortar os documentos por pergunta. São 5 perguntas, não uma avaliação ampla: a margem da de obrigatoriedade é pequena (6º trecho de 6).</p>
 
     <div class="shots">
       <figure><img src="img/chat.png" alt="Tela inicial do chat, com título, quatro perguntas sugeridas e campo para digitar a dúvida" loading="lazy"><figcaption>Tela do chat, com perguntas sugeridas.</figcaption></figure>
@@ -188,7 +188,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="card">
         <h3>Em desenvolvimento</h3>
         <ul class="status todo">
-          <li>Busca mais precisa: trechos cortados por pergunta (implementado; falta reenviar os PDFs e confirmar no chat)</li>
+          <li>Avaliação ampla: lista de perguntas com resposta conhecida e taxa de acerto</li>
           <li>Captura de tela de uma resposta com fontes</li>
           <li>Publicação do aplicativo em um endereço público</li>
         </ul>
@@ -254,7 +254,7 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Repositório público e esta página de apresentação.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Base carregada e primeiros testes reais. Correção: a IA citava páginas inexistentes (confundia número de pergunta com número de página); agora as páginas vêm do banco. Diagnóstico: o modelo de busca erra perguntas comuns em português, com comparação medida entre modelos.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: troca do modelo de busca gte-small (inglês) pelo multilingual-e5-small, rodando no navegador. Base reprocessada (1.669 trechos); as perguntas de MEI passaram a ser respondidas.</p></div>
-      <div><time datetime="2026-11-09">09/11/2026</time><p>Trechos cortados por pergunta (cada trecho começa com o título da pergunta) e busca com 6 trechos, para alcançar a pergunta de obrigatoriedade do IR. Aguarda reenvio dos PDFs.</p></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><p>Trechos cortados por pergunta (cada trecho começa com o título da pergunta) e busca com 6 trechos, Base reprocessada: as 5 perguntas do teste passaram a ser respondidas, inclusive a de obrigatoriedade do IR.</p></div>
     </div>
   </div>
 </section>
