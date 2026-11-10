@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:pages": "tsc -b && vite build --base=/assistente-virtual-naf/app/ --outDir docs/app --emptyOutDir && node -e \"require('fs').mkdirSync('docs/app/admin',{recursive:true});require('fs').copyFileSync('docs/app/index.html','docs/app/admin/index.html')\"",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",

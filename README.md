@@ -5,7 +5,8 @@ Chatbot RAG que responde dúvidas sobre IRPF, MEI e DIRF **apenas** com base em 
 
 - **Página de apresentação:** https://razzano380.github.io/assistente-virtual-naf/
 - **Documentação completa:** [docs/DOCUMENTACAO.md](docs/DOCUMENTACAO.md)
-- **Estágio (09/11/2026):** interface, banco e funções publicados; base carregada (4 PDFs, 1.867 trechos); as 5 perguntas do teste são respondidas com fontes. O app roda localmente (ainda sem endereço público).
+- **App publicado:** https://razzano380.github.io/assistente-virtual-naf/app/ (`/app/admin/` para administradores)
+- **Estágio (10/11/2026):** base carregada (4 PDFs, 1.867 trechos); a busca acha a página certa em 68 de 74 perguntas do gabarito (92%).
 
 ## Fluxo RAG
 
@@ -35,6 +36,7 @@ o limite de ~2 s de CPU do plano gratuito impede gerá-los na Edge Function) →
 3. Cadastre o Secret **`GROQ_API_KEY`** (crie a chave em https://console.groq.com/keys). Ela nunca vai para o front-end.
 4. Copie `.env.example` para `.env` e preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`.
 5. `npm install` e depois `npm run dev`.
+6. Para publicar no GitHub Pages: `npm run build:pages` (gera `docs/app`) e envie ao GitHub.
 
 ## Primeiro administrador
 

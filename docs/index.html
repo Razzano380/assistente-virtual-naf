@@ -93,7 +93,8 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
   <h1>Assistente Virtual NAF</h1>
   <p class="lead">Um assistente virtual inteligente que esclarece dúvidas sobre Imposto de Renda, MEI e DIRF com base exclusivamente na documentação oficial da Receita Federal, indicando as fontes e páginas que fundamentam cada resposta.</p>
   <div class="btns">
-    <a class="btn pri" href="https://github.com/Razzano380/assistente-virtual-naf">Ver código no GitHub</a>
+    <a class="btn pri" href="app/">Abrir o assistente</a>
+    <a class="btn" href="https://github.com/Razzano380/assistente-virtual-naf">Ver código no GitHub</a>
     <a class="btn" href="#demonstracao">Ver demonstração</a>
   </div>
 </div>
@@ -168,10 +169,11 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <ul style="margin:6px 0 0;padding-left:18px">
         <li>Base carregada: 4 PDFs da Receita Federal, divididos em 1.867 trechos.</li>
         <li>Teste com 74 perguntas cuja resposta já se conhece: a busca encontrou o trecho certo em 68 delas (92%). As outras 6 estão sendo corrigidas.</li>
-        <li>O assistente ainda roda só no computador do desenvolvedor, sem endereço público.</li>
+        <li>O assistente está publicado em <a href="app/">razzano380.github.io/assistente-virtual-naf/app</a>. Na primeira visita, o navegador baixa o modelo de busca (cerca de 113 MB); depois, ele fica guardado.</li>
       </ul>
     </div>
 
+    <figure style="margin-bottom:20px"><img src="img/resposta.png" alt="Chat respondendo que a DIRF 2025 deve ser entregue até 23h59min59s de 28 de fevereiro de 2025, com a lista de fontes: Perguntas e Respostas Dirf 2025, páginas 9 a 12" loading="lazy"><figcaption>Resposta real do assistente, com as páginas do documento oficial que a fundamentam.</figcaption></figure>
     <div class="shots">
       <figure><img src="img/chat.png" alt="Tela inicial do chat, com título, quatro perguntas sugeridas e campo para digitar a dúvida" loading="lazy"><figcaption>Tela do chat, com perguntas sugeridas.</figcaption></figure>
       <figure><img src="img/admin.png" alt="Tela de login da área de administração da base de conhecimento" loading="lazy"><figcaption>Entrada da área de administração, onde os PDFs são enviados.</figcaption></figure>
@@ -197,14 +199,13 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
           <li>Base carregada: 4 PDFs, 1.867 trechos</li>
           <li>Verificação em duas etapas e limite de uso no chat</li>
           <li>Avaliação automática da busca com 74 perguntas</li>
+          <li>Aplicativo publicado no GitHub Pages</li>
         </ul>
       </div>
       <div class="card">
         <h3>Em desenvolvimento</h3>
         <ul class="status todo">
-          <li>Busca: corrigir as 6 falhas do gabarito (hoje 68 de 74 perguntas, 92%)</li>
-          <li>Captura de tela de uma resposta com fontes</li>
-          <li>Publicação do aplicativo em um endereço público</li>
+          <li>Busca: corrigir as 6 falhas do gabarito (hoje 68 de 74 perguntas, 92%). Testados sem ganho: busca pelo título da pergunta, busca híbrida por palavras e um modelo maior</li>
         </ul>
       </div>
       <div class="card">
@@ -276,6 +277,8 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-10">10/11/2026</time><ul>
         <li>Segurança: verificação em duas etapas para o administrador, limite de uso no chat e cadastro público desligado.</li>
         <li>Avaliação automática da busca com 74 perguntas: 68 acertos (92%).</li>
+        <li>Três tentativas de melhorar a busca, medidas no gabarito, sem ganho: título da pergunta (65), busca híbrida por palavras (67) e modelo multilingual-e5-base (62). A busca atual foi mantida.</li>
+        <li>Aplicativo publicado no GitHub Pages e captura de uma resposta real com fontes nesta página.</li>
       </ul></div>
     </div>
   </div>

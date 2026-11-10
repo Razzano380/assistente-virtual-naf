@@ -98,13 +98,23 @@ Gabarito em `scripts/gabarito.json`: 74 perguntas escritas em linguagem do dia a
 | P&R gov_MEI | 14/14 |
 | **Total** | **68/74 (92%)**, posição média inversa (MRR) 0,667 |
 
+Tentativas de melhoria medidas no mesmo gabarito (nenhuma superou a busca atual, que foi mantida):
+
+| Variante | Acertos | MRR |
+|---|---|---|
+| Atual: trecho inteiro, multilingual-e5-small | **68/74** | 0,667 |
+| Nota combinada com o vetor só do título da pergunta (peso 0,3) | 65/74 | 0,708 |
+| Busca híbrida: vetor + BM25 por palavras (fusão RRF, peso 0,3) | 67/74 | 0,692 |
+| Modelo maior, multilingual-e5-base (768 dim.) | 62/74 | 0,599 |
+
 Falhas: prazo de entrega do IR (a busca traz o prazo da Dirf), calendário da restituição, rendimentos acumulados na Dirf, obrigações do MEI, prazo da DASN-Simei e excesso de faturamento do MEI. Nas perguntas fora da base, a similaridade do 1º trecho (0,82 a 0,88) fica na mesma faixa das respostas certas: um corte por similaridade não separaria "tem" de "não tem"; quem decide é a IA, pelo prompt.
 
 ## 8. Funcionalidades em desenvolvimento
 
-- Corrigir as 6 falhas da avaliação da busca (ver acima).
+- Corrigir as 6 falhas da avaliação da busca (ver acima). Restam opções mais caras: reordenador (reranker) ou mais trechos por pergunta, o que esbarra no limite de tokens da Groq.
 - Teste de ponta a ponta (pergunta ao chat publicado e conferência da resposta), respeitando o limite de uso.
-- Publicação do aplicativo em endereço público.
+
+O aplicativo está publicado em https://razzano380.github.io/assistente-virtual-naf/app/ (build estático em `docs/app`, gerado por `npm run build:pages`).
 
 ## 9. Problemas encontrados e soluções
 
@@ -119,7 +129,7 @@ Falhas: prazo de entrega do IR (a busca traz o prazo da Dirf), calendário da re
 
 ## 10. Próximos passos
 
-- **Corrigir as falhas da busca** (92% no gabarito). Candidatos: reconhecer a numeração "303. " do P&R gov_MEI, um modelo de embeddings maior ou um reordenador (reranker). Cada mudança é medida com `npm run avaliar` antes de reenviar os PDFs.
+- **Corrigir as falhas da busca** (92% no gabarito). Título, busca híbrida e modelo maior já foram testados sem ganho; falta testar um reordenador (reranker). Cada mudança é medida com `npm run avaliar` antes de reenviar os PDFs.
 - O chat baixa ~113 MB (modelo) na primeira visita; fica em cache no navegador.
 - Registrar uma demonstração com resposta e fontes.
 - Histórico de conversa, resposta em streaming e filtro por categoria.
