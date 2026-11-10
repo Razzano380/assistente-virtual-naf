@@ -43,7 +43,7 @@ PDF ──> texto por página (pdfjs) ──> trechos 1000/200 ──> embedding
     ──> função ingest (confere login e papel admin, valida) ──> tabela chunks
 ```
 
-Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por pergunta, temperatura 0.
+Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por pergunta, temperatura 0. Mais de 5 trechos estoura o limite de tokens por minuto da Groq no plano gratuito (erro 429).
 
 ### Banco de dados
 
@@ -67,6 +67,7 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 4. Publicação no Supabase.
 5. Correção do limite de processamento na ingestão (ver seção 9).
 6. Repositório público e página de apresentação.
+7. Carga dos 4 PDFs (1.669 trechos) e primeiros testes reais: correção das citações de página e diagnóstico da qualidade da busca.
 
 ## 7. Funcionalidades implementadas
 
@@ -80,8 +81,7 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 
 ## 8. Funcionalidades em desenvolvimento
 
-- Carga dos quatro PDFs na base (IRPF 2024, dois de MEI, DIRF 2025).
-- Teste ponta a ponta com conferência da página citada.
+- Qualidade da busca: perguntas como "Quem está obrigado a declarar o IR?" ainda não encontram a resposta (ver seção 9).
 - Publicação do aplicativo em endereço público.
 
 ## 9. Problemas encontrados e soluções
@@ -91,9 +91,13 @@ Parâmetros: trechos de 1000 caracteres com 200 de sobreposição, 5 trechos por
 | Erro 546 no envio de PDFs | O plano gratuito do Supabase limita cada função a cerca de 2 s de CPU; gerar embeddings em lote passa disso | Embeddings dos trechos gerados no navegador com o mesmo modelo; a função só valida e grava |
 | "Failed to send a request to the Edge Function" | Variáveis de ambiente vazias e funções não publicadas | Configuração do `.env`, publicação das funções e mensagens de erro mais claras |
 | Documentos com 0 trechos | Uploads interrompidos pelo erro 546 | Reenvio; o mesmo nome substitui o registro anterior |
+| Respostas citavam páginas inexistentes (ex.: "página 377" num PDF de 301 páginas) | O modelo confundia o número da pergunta ("377 —") com o da página | O modelo não escreve mais fontes; as páginas exibidas vêm do banco |
+| "Não encontrei" acompanhado de lista de fontes | A lista mostrava os trechos consultados mesmo sem resposta | Sem resposta, a lista de fontes fica vazia |
+| Algumas perguntas simples não são respondidas (ex.: "Quem está obrigado a declarar o IR?", "O que é MEI?") | **Em aberto.** O gte-small foi treinado em inglês e separa mal trechos em português; além disso, o documento usa outras palavras ("apresentar a Declaração de Ajuste Anual") | Testado sem sucesso: busca por palavras, busca híbrida e reescrita da pergunta. Um modelo multilíngue (multilingual-e5-small) resolveu as perguntas de MEI, mas não a de obrigatoriedade. Ver seção 10 |
 
 ## 10. Próximos passos
 
+- **Melhorar a busca (prioridade).** Avaliação com os 4 PDFs reais (1.669 trechos) mostrou que o gte-small erra perguntas comuns. Caminhos: modelo de embeddings multilíngue (no navegador, ~113 MB, ou por API) e trechos cortados por pergunta em vez de tamanho fixo. Exige reenviar os PDFs.
 - Concluir a carga da base e registrar uma demonstração com resposta e fontes.
 - Medir a qualidade com uma lista de perguntas de resposta conhecida.
 - Histórico de conversa, resposta em streaming e filtro por categoria.

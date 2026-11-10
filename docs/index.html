@@ -158,7 +158,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="step"><span>5</span><b>Banco</b>A função confere a permissão e grava.</div>
     </div>
 
-    <p class="note"><b>Estágio atual, sem maquiagem:</b> as telas e o servidor estão prontos e publicados, mas a base de conhecimento ainda está sendo carregada. Por isso as capturas abaixo mostram as telas reais sem uma resposta com fontes. Essa captura entra na próxima atualização.</p>
+    <p class="note"><b>Estágio atual, sem maquiagem:</b> os 4 PDFs estão carregados (1.669 trechos) e o assistente já responde perguntas como "Posso deduzir despesas médicas?" e "Qual o limite de faturamento do MEI?", com as páginas de origem. Perguntas simples como "Quem está obrigado a declarar o IR?" ainda não encontram a resposta: o modelo de busca atual (gte-small) foi treinado em inglês. A troca do modelo é a próxima entrega.</p>
 
     <div class="shots">
       <figure><img src="img/chat.png" alt="Tela inicial do chat, com título, quatro perguntas sugeridas e campo para digitar a dúvida" loading="lazy"><figcaption>Tela do chat, com perguntas sugeridas.</figcaption></figure>
@@ -182,13 +182,13 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
           <li>Upload de PDF com barra de progresso, lista e exclusão</li>
           <li>Divisor de texto com testes automatizados</li>
           <li>Banco, permissões e funções publicados no Supabase</li>
+          <li>Base carregada: 4 PDFs, 1.669 trechos</li>
         </ul>
       </div>
       <div class="card">
         <h3>Em desenvolvimento</h3>
         <ul class="status todo">
-          <li>Carga dos 4 PDFs na base (IRPF 2024, dois de MEI, DIRF 2025)</li>
-          <li>Teste ponta a ponta: pergunta, resposta e conferência da página citada</li>
+          <li>Busca mais precisa em português (modelo multilíngue e trechos por pergunta)</li>
           <li>Captura de tela de uma resposta com fontes</li>
           <li>Publicação do aplicativo em um endereço público</li>
         </ul>
@@ -252,6 +252,7 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Banco de dados e funções publicados no Supabase.</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Melhoria: os embeddings dos documentos passaram a ser gerados no navegador. No servidor gratuito, o envio de PDFs estourava o limite de processamento (erro 546).</p></div>
       <div><time datetime="2026-11-09">09/11/2026</time><p>Repositório público e esta página de apresentação.</p></div>
+      <div><time datetime="2026-11-09">09/11/2026</time><p>Base carregada e primeiros testes reais. Correção: a IA citava páginas inexistentes (confundia número de pergunta com número de página); agora as páginas vêm do banco. Diagnóstico: o modelo de busca erra perguntas comuns em português, com comparação medida entre modelos.</p></div>
     </div>
   </div>
 </section>
