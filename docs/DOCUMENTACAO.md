@@ -35,7 +35,8 @@ O projeto recria, em tecnologia web, um chatbot de referência feito em Python (
 PERGUNTA
 navegador: embedding da pergunta (multilingual-e5-small, prefixo "query: ")
 navegador ──> função chat (pergunta + vetor)
-                          ──> match_documents: 6 trechos mais parecidos (pgvector)
+                          ──> match_documents: 20 candidatos mais parecidos (pgvector)
+                          ──> Groq gpt-oss-20b: escolhe os 6 trechos que respondem
                           ──> Groq: resposta usando só os trechos
           <── resposta + fontes (documento, categoria, página)
 
@@ -98,6 +99,10 @@ Gabarito em `scripts/gabarito.json`: 74 perguntas escritas em linguagem do dia a
 | P&R gov_MEI | 14/14 |
 | **Total** | **68/74 (92%)**, posição média inversa (MRR) 0,667 |
 
+**Escolha pela IA (11/11/2026, adotada):** a busca por vetor traz 20 candidatos (o trecho certo está entre eles em 74 de 74 perguntas) e o modelo `openai/gpt-oss-20b` lê o começo de cada um e escolhe os 6 que vão para a resposta. Teste de ponta a ponta no chat publicado (`npm run avaliar:chat`): **77/80 (96%)**, contra 68/74 (92%) da busca anterior. As 6 falhas antigas passaram; as 6 perguntas fora da base receberam "Não encontrei". Erraram: "Como declarar aluguel que eu recebo?" e "Recebi dinheiro do dono para sair do imóvel alugado…" (fontes em páginas vizinhas à esperada) e "Posso fechar o MEI com dívidas em atraso?" ("Não encontrei").
+
+Quando a resposta não está nos documentos, o chat mostra um link para consulta: Guia do MEI do Sebrae (perguntas sobre MEI) ou site da Receita Federal (as demais).
+
 Tentativas de melhoria medidas no mesmo gabarito (nenhuma superou a busca atual, que foi mantida):
 
 | Variante | Acertos | MRR |
@@ -111,8 +116,7 @@ Falhas: prazo de entrega do IR (a busca traz o prazo da Dirf), calendário da re
 
 ## 8. Funcionalidades em desenvolvimento
 
-- Corrigir as 6 falhas da avaliação da busca (ver acima). Restam opções mais caras: reordenador (reranker) ou mais trechos por pergunta, o que esbarra no limite de tokens da Groq.
-- Teste de ponta a ponta (pergunta ao chat publicado e conferência da resposta), respeitando o limite de uso.
+- Corrigir as 3 perguntas que ainda erram no teste de ponta a ponta (ver acima).
 
 O aplicativo está publicado em https://razzano380.github.io/assistente-virtual-naf/app/ (build estático em `docs/app`, gerado por `npm run build:pages`).
 
@@ -129,7 +133,7 @@ O aplicativo está publicado em https://razzano380.github.io/assistente-virtual-
 
 ## 10. Próximos passos
 
-- **Corrigir as falhas da busca** (92% no gabarito). Título, busca híbrida e modelo maior já foram testados sem ganho; falta testar um reordenador (reranker). Cada mudança é medida com `npm run avaliar` antes de reenviar os PDFs.
+- **Corrigir as 3 falhas restantes** (96% de ponta a ponta). Cada mudança é medida com `npm run avaliar` (busca, sem custo) e `npm run avaliar:chat` (chat publicado, gasta cota da Groq; ~45 min por causa do limite de uso).
 - O chat baixa ~113 MB (modelo) na primeira visita; fica em cache no navegador.
 - Registrar uma demonstração com resposta e fontes.
 - Histórico de conversa, resposta em streaming e filtro por categoria.

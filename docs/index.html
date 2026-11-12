@@ -151,7 +151,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
     <div class="flow">
       <div class="step"><span>1</span><b>Pergunta</b>A pessoa digita a dúvida no chat.</div>
       <div class="step"><span>2</span><b>Embedding</b>O navegador transforma a pergunta num vetor de 384 números.</div>
-      <div class="step"><span>3</span><b>Busca</b>O banco devolve os 6 trechos mais parecidos.</div>
+      <div class="step"><span>3</span><b>Busca</b>O banco devolve 20 trechos parecidos, e a IA escolhe os 6 que respondem.</div>
       <div class="step"><span>4</span><b>Resposta</b>A IA responde usando só esses trechos.</div>
       <div class="step"><span>5</span><b>Fontes</b>O chat mostra documento, categoria e página.</div>
     </div>
@@ -168,7 +168,8 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
     <div class="note"><b>Estágio atual</b>
       <ul style="margin:6px 0 0;padding-left:18px">
         <li>Base carregada: 4 PDFs da Receita Federal, divididos em 1.867 trechos.</li>
-        <li>Teste com 74 perguntas cuja resposta já se conhece: a busca encontrou o trecho certo em 68 delas (92%). As outras 6 estão sendo corrigidas.</li>
+        <li>Teste com 80 perguntas cuja resposta já se conhece, feitas ao chat publicado: 77 certas (96%). Antes da última melhoria eram 92%.</li>
+        <li>Quando a resposta não está nos documentos, o assistente indica o site da Receita Federal ou, para MEI, o Guia do MEI do Sebrae.</li>
         <li>O assistente está publicado em <a href="app/">razzano380.github.io/assistente-virtual-naf/app</a>. Na primeira visita, o navegador baixa o modelo de busca (cerca de 113 MB); depois, ele fica guardado.</li>
       </ul>
     </div>
@@ -205,13 +206,12 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="card">
         <h3>Em desenvolvimento</h3>
         <ul class="status todo">
-          <li>Busca: corrigir as 6 falhas do gabarito (hoje 68 de 74 perguntas, 92%). Testados sem ganho: busca pelo título da pergunta, busca híbrida por palavras e um modelo maior</li>
+          <li>Corrigir as 3 perguntas que ainda erram no teste de ponta a ponta (hoje 77 de 80, 96%)</li>
         </ul>
       </div>
       <div class="card">
         <h3>Próximas entregas</h3>
         <ul class="status todo">
-          <li>Teste de ponta a ponta das respostas do chat</li>
           <li>Histórico da conversa</li>
           <li>Resposta aparecendo aos poucos (streaming)</li>
           <li>Filtro por categoria na busca</li>
@@ -279,6 +279,10 @@ npm test                # roda os testes</pre>
         <li>Avaliação automática da busca com 74 perguntas: 68 acertos (92%).</li>
         <li>Três tentativas de melhorar a busca, medidas no gabarito, sem ganho: título da pergunta (65), busca híbrida por palavras (67) e modelo multilingual-e5-base (62). A busca atual foi mantida.</li>
         <li>Aplicativo publicado no GitHub Pages e captura de uma resposta real com fontes nesta página.</li>
+      </ul></div>
+      <div><time datetime="2026-11-11">11/11/2026</time><ul>
+        <li>Busca em duas etapas: o banco traz 20 trechos e uma IA menor escolhe os 6 que respondem. Teste de ponta a ponta com 80 perguntas no chat publicado: 77 certas (96%, antes 92%).</li>
+        <li>Sem resposta nos documentos, o chat indica o site da Receita Federal ou o Guia do MEI do Sebrae.</li>
       </ul></div>
     </div>
   </div>

@@ -25,7 +25,10 @@ export function ChatMessage({ mensagem }: { mensagem: Mensagem }) {
           <p className="whitespace-pre-wrap break-words">{mensagem.content}</p>
         ) : (
           <div className="prose-chat break-words">
-            <ReactMarkdown>{mensagem.content}</ReactMarkdown>
+            {/* Links abrem em nova aba para não perder a conversa. */}
+            <ReactMarkdown components={{ a: (p) => <a {...p} target="_blank" rel="noreferrer" className="text-primary underline" /> }}>
+              {mensagem.content}
+            </ReactMarkdown>
           </div>
         )}
         {!isUser && mensagem.fontes && <SourcesList fontes={mensagem.fontes} />}

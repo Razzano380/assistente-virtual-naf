@@ -9,7 +9,8 @@ import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { chunkDocumento } from '../src/lib/chunker.ts'
 import { MODELO, gerarEmbeddings } from '../src/lib/embeddings.ts'
 
-const K = 6 // igual ao chat (supabase/functions/chat)
+const K = 6 // trechos que vão para a resposta (supabase/functions/chat)
+const CANDIDATOS = 20 // trechos que a IA examina antes de escolher os K (supabase/functions/chat)
 const TOLERANCIA = 1 // a resposta pode continuar na página seguinte à da pergunta
 const DOCS = { irpf: 'P&R IRPF', dirf: 'Dirf', mei: 'perguntaS_mei', gov: 'gov_MEI' }
 
@@ -62,6 +63,7 @@ const porDoc = {}
 const falhas = []
 let somaRR = 0
 let comResposta = 0
+let nosCandidatos = 0
 
 console.log(`\nPosição do trecho certo entre ${base.length} (✓ = entre os ${K} que vão para a IA)\n`)
 perguntas.forEach((p, k) => {
@@ -77,6 +79,7 @@ perguntas.forEach((p, k) => {
   const pos = ordem.findIndex(([, i]) => certo(base[i])) + 1
   const ok = pos >= 1 && pos <= K
   somaRR += pos ? 1 / pos : 0
+  if (pos >= 1 && pos <= CANDIDATOS) nosCandidatos++
   porDoc[p.doc] ??= { ok: 0, total: 0 }
   porDoc[p.doc].total++
   if (ok) porDoc[p.doc].ok++
@@ -88,6 +91,7 @@ const total = Object.values(porDoc).reduce((s, d) => s + d.ok, 0)
 console.log(`\n== Resultado: ${total}/${comResposta} (${Math.round((100 * total) / comResposta)}%) com a página certa entre os ${K} trechos`)
 for (const [d, r] of Object.entries(porDoc)) console.log(`   ${d.padEnd(4)} ${r.ok}/${r.total}`)
 console.log(`   MRR (posição média inversa): ${(somaRR / comResposta).toFixed(3)}`)
+console.log(`   Entre os ${CANDIDATOS} candidatos que a IA examina: ${nosCandidatos}/${comResposta}`)
 if (falhas.length) {
   console.log('\n== Fora dos 6 (o chat provavelmente erra ou diz que não encontrou):')
   for (const f of falhas) console.log(`   [${f.pos || 'não achou'}] ${f.pergunta}\n        esperado ${f.doc} p${f.pagina} · 1º veio ${f.primeiro}`)

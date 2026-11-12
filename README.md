@@ -6,12 +6,13 @@ Chatbot RAG que responde dúvidas sobre IRPF, MEI e DIRF **apenas** com base em 
 - **Página de apresentação:** https://razzano380.github.io/assistente-virtual-naf/
 - **Documentação completa:** [docs/DOCUMENTACAO.md](docs/DOCUMENTACAO.md)
 - **App publicado:** https://razzano380.github.io/assistente-virtual-naf/app/ (`/app/admin/` para administradores)
-- **Estágio (10/11/2026):** base carregada (4 PDFs, 1.867 trechos); a busca acha a página certa em 68 de 74 perguntas do gabarito (92%).
+- **Estágio (11/11/2026):** base carregada (4 PDFs, 1.867 trechos); no teste de ponta a ponta o chat acerta 77 de 80 perguntas do gabarito (96%).
 
 ## Fluxo RAG
 
 ```
-Pergunta → embedding no navegador (multilingual-e5-small, 384 dim) → busca no pgvector (top 6, cosseno)
+Pergunta → embedding no navegador (multilingual-e5-small, 384 dim) → busca no pgvector (20 candidatos, cosseno)
+        → Groq GPT-OSS-20B escolhe os 6 trechos que respondem
         → prompt + contexto → Groq GPT-OSS-120B (temperature 0) → resposta com fontes
 ```
 
@@ -68,3 +69,6 @@ Um PDF com o mesmo nome substitui o anterior. PDFs escaneados (só imagem) não 
 (74 perguntas em linguagem do dia a dia, com documento e página esperados, mais 6 fora da base): diz se a página
 certa aparece entre os 6 trechos que vão para a IA. Não usa a Groq. A 1ª execução gera os vetores (~5 min) e guarda
 em `scripts/.cache`; as seguintes levam segundos. Para testar uma pergunta nova, acrescente-a no gabarito.
+
+`npm run avaliar:chat` manda as mesmas perguntas ao **chat publicado** e confere as fontes da resposta (gasta cota
+da Groq; espera 32 s entre perguntas por causa do limite de uso; retoma de onde parou).

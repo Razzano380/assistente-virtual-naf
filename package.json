@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "avaliar": "node scripts/avaliar-busca.mjs"
+    "avaliar": "node scripts/avaliar-busca.mjs",
+    "avaliar:chat": "node scripts/avaliar-chat.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.5.1",
