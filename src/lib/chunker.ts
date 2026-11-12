@@ -84,6 +84,14 @@ export function chunkPages(pages: { pagina: number; texto: string }[], opts?: Sp
 // Início de pergunta numerada no começo da linha: "001 — " (P&R IRPF) ou "1.8. " / "16.1 " (Dirf, P&R MEI).
 const MARCA_PERGUNTA = /(?:^|\n)[ \t]*(?:\d{3} — |\d{1,2}\.\d{1,2}\.? +(?=\S))/g
 const MIN_PERGUNTAS = 10
+// "344. " (P&R gov_MEI). Só vale em documento sem as marcas acima e se o título termina em "?" logo adiante:
+// listas numeradas dentro das respostas ("1. nome, endereço…") têm o mesmo formato.
+const MARCA_SIMPLES = /(?:^|\n)[ \t]*\d{1,3}\. +(?=\S)/g
+const TITULO_COM_INTERROGACAO = /^[^?\n]*(?:\n(?![ \t]*\d{1,3}\. )[^?\n]*)?\?/ // "?" na linha do número ou na seguinte
+
+function marcasDe(texto: string, re: RegExp): number[] {
+  return [...texto.matchAll(re)].map((m) => m.index! + (m[0].startsWith('\n') ? 1 : 0))
+}
 
 /**
  * Um bloco por pergunta: cada trecho começa com o título da pergunta, para a busca casar
@@ -94,7 +102,9 @@ export function chunkDocumento(pages: { pagina: number; texto: string }[]): Chun
   let texto = ''
   const inicios: number[] = []
   for (const { texto: t } of pages) { inicios.push(texto.length); texto += t + '\n' }
-  const marcas = [...texto.matchAll(MARCA_PERGUNTA)].map((m) => m.index! + (m[0].startsWith('\n') ? 1 : 0))
+  let marcas = marcasDe(texto, MARCA_PERGUNTA)
+  if (marcas.length < MIN_PERGUNTAS)
+    marcas = marcasDe(texto, MARCA_SIMPLES).filter((m) => TITULO_COM_INTERROGACAO.test(texto.slice(m)))
   if (marcas.length < MIN_PERGUNTAS) return chunkPages(pages)
 
   // shortcut: página = onde a pergunta começa; respostas que atravessam páginas citam só a primeira.

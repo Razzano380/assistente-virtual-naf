@@ -66,6 +66,13 @@ describe('chunkDocumento (um bloco por pergunta)', () => {
     expect(out.some((c) => c.conteudo.includes('.....'))).toBe(false)
   })
 
+  it('numeração "344. " (gov_MEI): pergunta vira bloco, lista numerada dentro da resposta não', () => {
+    const t = Array.from({ length: 12 }, (_, i) => `${i + 340}. Posso fazer ${i}?\nSim:\n1. primeiro passo;\n2. segundo passo.`).join('\n')
+    const blocos = chunkDocumento([{ pagina: 5, texto: t }])
+    expect(blocos).toHaveLength(12)
+    expect(blocos[4]).toEqual({ conteudo: '344. Posso fazer 4?\nSim:\n1. primeiro passo;\n2. segundo passo.', pagina: 5 })
+  })
+
   it('sem perguntas numeradas, corta por tamanho', () => {
     expect(chunkDocumento([{ pagina: 1, texto }])).toEqual(chunkPages([{ pagina: 1, texto }]))
   })

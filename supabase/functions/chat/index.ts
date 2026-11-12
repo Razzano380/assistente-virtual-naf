@@ -55,7 +55,13 @@ export function ordenar(candidatos: Trecho[], escolha: number[]): Trecho[] {
   return idx.slice(0, K).map((i) => candidatos[i])
 }
 
-async function escolher(pergunta: string, candidatos: Trecho[], groqKey: string): Promise<Trecho[]> {
+const titulo = (t: Trecho) => t.conteudo.split('\n', 1)[0]
+
+async function escolher(pergunta: string, todos: Trecho[], groqKey: string): Promise<Trecho[]> {
+  // Respostas longas viram vários trechos com o mesmo título; repetidos na lista, eles tomavam o lugar
+  // de outras perguntas. A IA vê cada pergunta uma vez (o trecho mais parecido dela).
+  const vistos = new Set<string>()
+  const candidatos = todos.filter((t) => !vistos.has(titulo(t)) && vistos.add(titulo(t)))
   const lista = candidatos.map((t, i) => `[${i + 1}] ${t.conteudo.replace(/\s+/g, ' ').slice(0, 300)}`).join('\n')
   try {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
