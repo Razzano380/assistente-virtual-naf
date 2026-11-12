@@ -101,6 +101,8 @@ Gabarito em `scripts/gabarito.json`: 74 perguntas escritas em linguagem do dia a
 
 **Escolha pela IA (11/11/2026, adotada):** a busca por vetor traz 20 candidatos (o trecho certo está entre eles em 74 de 74 perguntas) e o modelo `openai/gpt-oss-20b` lê o começo de cada um e escolhe os 6 que vão para a resposta. Teste de ponta a ponta no chat publicado (`npm run avaliar:chat`): **77/80 (96%)**, contra 68/74 (92%) da busca anterior. As 6 falhas antigas passaram; as 6 perguntas fora da base receberam "Não encontrei". Erraram: "Como declarar aluguel que eu recebo?" e "Recebi dinheiro do dono para sair do imóvel alugado…" (fontes em páginas vizinhas à esperada) e "Posso fechar o MEI com dívidas em atraso?" ("Não encontrei").
 
+**Depois do divisor do gov_MEI e do filtro de assunto (12/11/2026): 78/80 (97,5%).** O divisor passou a reconhecer a numeração "344. " (gov_MEI de 159 para 382 trechos, uma pergunta por trecho) e o MEI com dívidas passou a ser respondido; o gabarito aceita a pergunta equivalente do outro PDF de MEI em 6 casos. Uma regra rígida no prompt ("só responda se um trecho tratar diretamente da pergunta") derrubou 2 respostas certas e foi retirada; ficou só a regra de que mensagens soltas ou fora do assunto ("sabao", "oi") recebem "Não encontrei". Ainda erram: "Como declarar aluguel que eu recebo?" (a pergunta certa fica fora dos 6 escolhidos) e "Recebi dinheiro do dono para sair do imóvel alugado…" (o modelo respondeu "Não encontrei"; numa execução anterior havia respondido).
+
 Quando a resposta não está nos documentos, o chat mostra um link para consulta: Guia do MEI do Sebrae (perguntas sobre MEI) ou site da Receita Federal (as demais).
 
 Tentativas de melhoria medidas no mesmo gabarito (nenhuma superou a busca atual, que foi mantida):
@@ -116,7 +118,7 @@ Falhas: prazo de entrega do IR (a busca traz o prazo da Dirf), calendário da re
 
 ## 8. Funcionalidades em desenvolvimento
 
-- Corrigir as 3 perguntas que ainda erram no teste de ponta a ponta (ver acima).
+- Corrigir as 2 perguntas que ainda erram no teste de ponta a ponta (ver acima).
 
 O aplicativo está publicado em https://razzano380.github.io/assistente-virtual-naf/app/ (build estático em `docs/app`, gerado por `npm run build:pages`).
 
@@ -133,7 +135,7 @@ O aplicativo está publicado em https://razzano380.github.io/assistente-virtual-
 
 ## 10. Próximos passos
 
-- **Corrigir as 3 falhas restantes** (96% de ponta a ponta). Cada mudança é medida com `npm run avaliar` (busca, sem custo) e `npm run avaliar:chat` (chat publicado, gasta cota da Groq; ~45 min por causa do limite de uso).
+- **Corrigir as 2 falhas restantes** (97,5% de ponta a ponta). Cada mudança é medida com `npm run avaliar` (busca, sem custo) e `npm run avaliar:chat` (chat publicado, gasta cota da Groq; ~45 min por causa do limite de uso).
 - O chat baixa ~113 MB (modelo) na primeira visita; fica em cache no navegador.
 - Registrar uma demonstração com resposta e fontes.
 - Ideia em avaliação: uma segunda chamada à IA conferindo se a resposta está nos trechos (custa uma chamada a mais por pergunta).

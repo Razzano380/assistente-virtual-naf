@@ -168,7 +168,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
     <div class="note"><b>Estágio atual</b>
       <ul style="margin:6px 0 0;padding-left:18px">
         <li>Base carregada: 4 PDFs da Receita Federal, divididos em 1.867 trechos.</li>
-        <li>Teste com 80 perguntas cuja resposta já se conhece, feitas ao chat publicado: 77 certas (96%). Antes da última melhoria eram 92%.</li>
+        <li>Teste com 80 perguntas cuja resposta já se conhece, feitas ao chat publicado: 78 certas (97,5%). Antes da última melhoria eram 92%.</li>
         <li>Quando a resposta não está nos documentos, o assistente indica o site da Receita Federal ou, para MEI, o Guia do MEI do Sebrae.</li>
         <li>O assistente está publicado em <a href="app/">razzano380.github.io/assistente-virtual-naf/app</a>. Na primeira visita, o navegador baixa o modelo de busca (cerca de 113 MB); depois, ele fica guardado.</li>
       </ul>
@@ -197,7 +197,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
           <li>Upload de PDF com barra de progresso, lista e exclusão</li>
           <li>Divisor de texto com testes automatizados</li>
           <li>Banco, permissões e funções publicados no Supabase</li>
-          <li>Base carregada: 4 PDFs, 1.867 trechos</li>
+          <li>Base carregada: 4 PDFs, cerca de 2.090 trechos</li>
           <li>Verificação em duas etapas e limite de uso no chat</li>
           <li>Avaliação automática da busca com 74 perguntas</li>
           <li>Aplicativo publicado no GitHub Pages</li>
@@ -209,7 +209,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="card">
         <h3>Em desenvolvimento</h3>
         <ul class="status todo">
-          <li>Corrigir as 3 perguntas que ainda erram no teste de ponta a ponta (hoje 77 de 80, 96%)</li>
+          <li>Corrigir as 2 perguntas que ainda erram no teste de ponta a ponta (hoje 78 de 80, 97,5%)</li>
         </ul>
       </div>
       <div class="card">
@@ -288,6 +288,7 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-12">12/11/2026</time><ul>
         <li>Mensagens soltas ou fora do assunto (como "sabao") passaram a receber "Não encontrei", em vez de uma resposta inventada.</li>
         <li>Histórico da conversa, resposta em streaming e filtro por categoria no chat.</li>
+        <li>Divisor de texto passou a reconhecer a numeração do PDF gov_MEI (de 159 para 382 trechos, um por pergunta). Teste de ponta a ponta: 78 certas de 80 (97,5%).</li>
       </ul></div>
     </div>
   </div>

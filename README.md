@@ -6,7 +6,7 @@ Chatbot RAG que responde dúvidas sobre IRPF, MEI e DIRF **apenas** com base em 
 - **Página de apresentação:** https://razzano380.github.io/assistente-virtual-naf/
 - **Documentação completa:** [docs/DOCUMENTACAO.md](docs/DOCUMENTACAO.md)
 - **App publicado:** https://razzano380.github.io/assistente-virtual-naf/app/ (`/app/admin/` para administradores)
-- **Estágio (11/11/2026):** base carregada (4 PDFs, 1.867 trechos); no teste de ponta a ponta o chat acerta 77 de 80 perguntas do gabarito (96%).
+- **Estágio (12/11/2026):** base carregada (4 PDFs, cerca de 2.090 trechos); no teste de ponta a ponta o chat acerta 78 de 80 perguntas do gabarito (97,5%).
 
 ## Fluxo RAG
 
