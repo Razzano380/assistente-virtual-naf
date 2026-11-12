@@ -136,7 +136,8 @@ O aplicativo está publicado em https://razzano380.github.io/assistente-virtual-
 - **Corrigir as 3 falhas restantes** (96% de ponta a ponta). Cada mudança é medida com `npm run avaliar` (busca, sem custo) e `npm run avaliar:chat` (chat publicado, gasta cota da Groq; ~45 min por causa do limite de uso).
 - O chat baixa ~113 MB (modelo) na primeira visita; fica em cache no navegador.
 - Registrar uma demonstração com resposta e fontes.
-- Histórico de conversa, resposta em streaming e filtro por categoria.
+- Ideia em avaliação: uma segunda chamada à IA conferindo se a resposta está nos trechos (custa uma chamada a mais por pergunta).
+- Feito em 12/11: histórico de conversa (as últimas 6 mensagens vão ao modelo; pergunta de até 7 palavras é buscada junto com a anterior), streaming (SSE; o texto final limpo e as fontes chegam no evento `fim`) e filtro por categoria (a função busca 80 trechos e filtra por categoria, sem mudar o SQL).
 - Migrar da chave `service_role` legada para as chaves novas do Supabase antes de 2027.
 
 ## 11. Referências

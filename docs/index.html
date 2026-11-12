@@ -201,6 +201,9 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
           <li>Verificação em duas etapas e limite de uso no chat</li>
           <li>Avaliação automática da busca com 74 perguntas</li>
           <li>Aplicativo publicado no GitHub Pages</li>
+          <li>Histórico da conversa: perguntas curtas como "e se eu passar disso?" entendem a pergunta anterior</li>
+          <li>Resposta aparecendo aos poucos (streaming)</li>
+          <li>Filtro por categoria na busca (IRPF, MEI ou DIRF)</li>
         </ul>
       </div>
       <div class="card">
@@ -212,9 +215,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);f
       <div class="card">
         <h3>Próximas entregas</h3>
         <ul class="status todo">
-          <li>Histórico da conversa</li>
-          <li>Resposta aparecendo aos poucos (streaming)</li>
-          <li>Filtro por categoria na busca</li>
+          <li>Segunda IA conferindo se a resposta está nos trechos (em avaliação)</li>
         </ul>
       </div>
     </div>
@@ -283,6 +284,10 @@ npm test                # roda os testes</pre>
       <div><time datetime="2026-11-11">11/11/2026</time><ul>
         <li>Busca em duas etapas: o banco traz 20 trechos e uma IA menor escolhe os 6 que respondem. Teste de ponta a ponta com 80 perguntas no chat publicado: 77 certas (96%, antes 92%).</li>
         <li>Sem resposta nos documentos, o chat indica o site da Receita Federal ou o Guia do MEI do Sebrae.</li>
+      </ul></div>
+      <div><time datetime="2026-11-12">12/11/2026</time><ul>
+        <li>Mensagens soltas ou fora do assunto (como "sabao") passaram a receber "Não encontrei", em vez de uma resposta inventada.</li>
+        <li>Histórico da conversa, resposta em streaming e filtro por categoria no chat.</li>
       </ul></div>
     </div>
   </div>
